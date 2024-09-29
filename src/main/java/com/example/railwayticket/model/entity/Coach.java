@@ -1,7 +1,7 @@
 package com.example.railwayticket.model.entity;
 
 import com.example.railwayticket.model.enums.SeatClass;
-import com.example.railwayticket.utils.converter.IntegerListConverter;
+import com.example.railwayticket.utils.converter.LongListConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -44,7 +44,7 @@ public class Coach {
     @Column(nullable = false, columnDefinition = "int default 0")
     private Integer totalSeats = 0;
 
-    @Column(nullable = false, columnDefinition = "varchar(255)")
-    @Convert(converter = IntegerListConverter.class)
-    private List<Integer> seatOrientation = new ArrayList<>();
+    @Column(columnDefinition = "varchar(255)")
+    @Convert(converter = LongListConverter.class)
+    private List<Long> seatOrientation = new ArrayList<>();
 }

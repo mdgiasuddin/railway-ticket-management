@@ -1,9 +1,7 @@
 package com.example.railwayticket.model.entity;
 
-import com.example.railwayticket.model.enums.SeatClass;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -12,7 +10,6 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
-import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
@@ -20,23 +17,20 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Table
 @Getter
 @Setter
-public class Fair {
+public class TrainRouteStation {
+
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private long id;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(nullable = false)
-    private Station fromStation;
+    private TrainRoute trainRoute;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(nullable = false)
-    private Station toStation;
+    private Station station;
 
-    @Column(nullable = false, columnDefinition = "varchar(10)")
-    @Enumerated(STRING)
-    private SeatClass seatClass;
-
-    @Column(nullable = false)
-    private Double amount;
+    @Column(nullable = false, columnDefinition = "int default 0")
+    private int timeFromStartStation = 0;
 }
