@@ -10,12 +10,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
@@ -47,4 +51,19 @@ public class Coach {
     @Column(columnDefinition = "varchar(255)")
     @Convert(converter = LongListConverter.class)
     private List<Long> seatOrientation = new ArrayList<>();
+
+    @OneToMany(mappedBy = "coach", fetch = LAZY)
+    private Set<Seat> seats = new HashSet<>();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Coach coach)) return false;
+        return id == coach.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 }

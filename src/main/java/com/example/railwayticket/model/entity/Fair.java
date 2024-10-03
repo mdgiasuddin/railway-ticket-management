@@ -39,4 +39,15 @@ public class Fair {
 
     @Column(nullable = false)
     private Double amount;
+
+    @Override
+    public String toString() {
+        return "Fair{" +
+                "id=" + id +
+                ", fromStation=" + fromStation +
+                ", toStation=" + toStation +
+                ", seatClass=" + seatClass +
+                ", amount=" + amount +
+                '}';
+    }
 }

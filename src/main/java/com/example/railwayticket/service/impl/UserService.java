@@ -1,11 +1,8 @@
-package com.example.railwayticket.service;
+package com.example.railwayticket.service.impl;
 
-import com.example.railwayticket.model.entity.User;
-import com.example.railwayticket.model.enums.Role;
 import com.example.railwayticket.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.codec.Hex;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 

@@ -8,12 +8,14 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.util.Set;
 
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
@@ -55,4 +57,7 @@ public class TrainRoute {
 
     @Column(nullable = false)
     private String description;
+
+    @OneToMany(mappedBy = "trainRoute", fetch = LAZY)
+    private Set<TrainRouteStation> trainRouteStations;
 }

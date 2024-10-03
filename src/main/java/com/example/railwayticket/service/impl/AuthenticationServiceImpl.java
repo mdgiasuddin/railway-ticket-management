@@ -1,9 +1,10 @@
-package com.example.railwayticket.service;
+package com.example.railwayticket.service.impl;
 
 import com.example.railwayticket.config.security.JwtService;
 import com.example.railwayticket.model.dto.request.AuthenticationRequest;
 import com.example.railwayticket.model.dto.response.AuthenticationResponse;
 import com.example.railwayticket.model.entity.User;
+import com.example.railwayticket.service.intface.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -12,11 +13,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class AuthenticationService {
+public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
+    @Override
     public AuthenticationResponse login(AuthenticationRequest request) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(

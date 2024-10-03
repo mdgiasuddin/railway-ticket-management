@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import static jakarta.persistence.EnumType.STRING;
@@ -23,7 +24,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Table
 @Getter
 @Setter
-public class AvailableSeat {
+public class SeatForJourney {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private long id;
@@ -44,6 +45,9 @@ public class AvailableSeat {
     @JoinColumn(nullable = false)
     private TrainRoute trainRoute;
 
+    @Column(nullable = false)
+    private Double fair;
+
     @Column(nullable = false, columnDefinition = "varchar(10)")
     @Enumerated(STRING)
     private SeatStatus seatStatus;
@@ -53,4 +57,7 @@ public class AvailableSeat {
 
     @Column(nullable = false)
     private LocalTime journeyTime;
+
+    @Column(nullable = false)
+    private LocalDateTime journeyEndTime;
 }

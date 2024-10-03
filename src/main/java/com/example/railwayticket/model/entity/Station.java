@@ -24,4 +24,11 @@ public class Station {
 
     @Column(nullable = false)
     private String description;
+
+    @Override
+    public String toString() {
+        return "Station{" +
+                "id=" + id +
+                '}';
+    }
 }
