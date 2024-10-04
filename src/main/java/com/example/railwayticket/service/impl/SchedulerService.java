@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,10 +40,10 @@ public class SchedulerService {
     private final TrainRouteRepository trainRouteRepository;
     private final FairRepository fairRepository;
     private final SeatForJourneyRepository seatForJourneyRepository;
-    private final LocalDate journeyDate = LocalDate.parse("2024-10-06");
+    private final LocalDate journeyDate = LocalDate.parse("2024-10-05");
 
     @Transactional
-//    @Scheduled(initialDelay = 1000)
+    @Scheduled(initialDelay = 1000)
     public void schedule() {
         log.info("Scheduler started at: {}", LocalDateTime.now());
         int page = 0;
@@ -72,11 +73,12 @@ public class SchedulerService {
             for (Coach coach : trainRoute.getTrain().getCoaches()) {
                 for (Seat seat : coach.getSeats()) {
                     List<Long> seatStationMapping = UP.equals(trainRoute.getRouteType()) ? seat.getUpStationMapping() : seat.getDownStationMapping();
+                    log.info("Seat: {}, mapping: {}", seat.getId(), seatStationMapping);
                     for (int i = 0; i < seatStationMapping.size() - 1; i++) {
-                        long fromStationId = stationIds.get(i);
-                        long toStationId = stationIds.get(i + 1);
+                        long fromStationId = seatStationMapping.get(i);
+                        long toStationId = seatStationMapping.get(i + 1);
 
-                        log.info("From station {}, to station {}, class {}", fromStationId, toStationId, coach.getSeatClass());
+                        log.info("Seat: {}, From station {}, to station {}, class {}", seat.getId(), fromStationId, toStationId, coach.getSeatClass());
 
                         SeatForJourney seatForJourney = new SeatForJourney();
                         seatForJourney.setIdKey(MiscUtils.generateIdKey());

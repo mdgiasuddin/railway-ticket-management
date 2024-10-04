@@ -28,4 +28,13 @@ public class Route {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(nullable = false)
     private Station endStation;
+
+    @Override
+    public String toString() {
+        return "Route{" +
+                "id=" + id +
+                ", startStation=" + startStation +
+                ", endStation=" + endStation +
+                '}';
+    }
 }

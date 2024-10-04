@@ -5,6 +5,7 @@ import com.example.railwayticket.model.dto.response.ticketbooking.TicketSearchRe
 import com.example.railwayticket.model.dto.response.ticketbooking.TicketSeatResponse;
 import com.example.railwayticket.model.dto.response.ticketbooking.TicketTrainResponse;
 import com.example.railwayticket.model.entity.Coach;
+import com.example.railwayticket.model.entity.Seat;
 import com.example.railwayticket.model.entity.SeatForJourney;
 import com.example.railwayticket.model.entity.Train;
 import com.example.railwayticket.repository.SeatForJourneyRepository;
@@ -62,6 +63,7 @@ public class TicketBookingServiceImpl implements TicketBookingService {
             trainCoachMap.put(train, defaultList);
         }
 
+        log.info("TrainCoachMap: {}", trainCoachMap);
         return trainCoachMap;
     }
 
@@ -92,11 +94,17 @@ public class TicketBookingServiceImpl implements TicketBookingService {
                 ));
                 trainResponse.setDestinationArrivalTime(firstSeatForJourney.getDestinationArrivalTime());
 
-                for (SeatForJourney seatForJourney : seatForJourneys) {
+                Map<Long, SeatForJourney> seatForJourneyMap = buildSeatForJourneyMap(seatForJourneys);
+                for (Seat seat : coach.getSeats()) {
                     TicketSeatResponse seatResponse = new TicketSeatResponse();
-                    seatResponse.setId(seatForJourney.getId());
-                    seatResponse.setIdKey(seatForJourney.getIdKey());
-                    seatResponse.setSeatNumber(seatForJourney.getSeat().getNumber());
+                    seatResponse.setSeatNumber(seat.getNumber());
+                    coachResponse.getSeats().add(seatResponse);
+                    if (seatForJourneyMap.containsKey(seat.getId())) {
+                        SeatForJourney seatForJourney = seatForJourneyMap.get(seat.getId());
+                        seatResponse.setId(seatForJourney.getId());
+                        seatResponse.setIdKey(seatForJourney.getIdKey());
+                        seatResponse.setAvailable(true);
+                    }
                     coachResponse.getSeats().add(seatResponse);
                 }
                 trainResponse.getCoaches().add(coachResponse);
@@ -105,6 +113,16 @@ public class TicketBookingServiceImpl implements TicketBookingService {
             ticketSearchResponse.getTrains().add(trainResponse);
         }
 
+        log.info("TicketSearchResponse: {}", ticketSearchResponse);
         return ticketSearchResponse;
+    }
+
+    private Map<Long, SeatForJourney> buildSeatForJourneyMap(List<SeatForJourney> seatForJourneys) {
+        Map<Long, SeatForJourney> seatForJourneyMap = new HashMap<>();
+        for (SeatForJourney seatForJourney : seatForJourneys) {
+            seatForJourneyMap.put(seatForJourney.getSeat().getId(), seatForJourney);
+        }
+        log.info("SeatForJourneyMap: {}", seatForJourneyMap);
+        return seatForJourneyMap;
     }
 }

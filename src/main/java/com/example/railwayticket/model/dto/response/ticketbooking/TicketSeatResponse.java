@@ -9,4 +9,5 @@ public class TicketSeatResponse {
     private long id;
     private String idKey;
     private String seatNumber;
+    private boolean available = false;
 }

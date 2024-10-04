@@ -57,4 +57,13 @@ public class Seat {
     public int hashCode() {
         return Objects.hashCode(id);
     }
+
+    @Override
+    public String toString() {
+        return "Seat{" +
+                "id=" + id +
+                ", number='" + number + '\'' +
+                ", ordering=" + ordering +
+                '}';
+    }
 }
