@@ -15,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,7 +42,7 @@ public class SchedulerService {
     private final LocalDate journeyDate = LocalDate.parse("2024-10-05");
 
     @Transactional
-    @Scheduled(initialDelay = 1000)
+//    @Scheduled(initialDelay = 1000)
     public void schedule() {
         log.info("Scheduler started at: {}", LocalDateTime.now());
         int page = 0;
@@ -73,7 +72,7 @@ public class SchedulerService {
             for (Coach coach : trainRoute.getTrain().getCoaches()) {
                 for (Seat seat : coach.getSeats()) {
                     List<Long> seatStationMapping = UP.equals(trainRoute.getRouteType()) ? seat.getUpStationMapping() : seat.getDownStationMapping();
-                    log.info("Seat: {}, mapping: {}", seat.getId(), seatStationMapping);
+                    log.info("Seat: {}, Station mapping: {}", seat.getId(), seatStationMapping);
                     for (int i = 0; i < seatStationMapping.size() - 1; i++) {
                         long fromStationId = seatStationMapping.get(i);
                         long toStationId = seatStationMapping.get(i + 1);
@@ -127,7 +126,6 @@ public class SchedulerService {
             fairMap.put(MiscUtils.generateFareKey(fare.getFromStation().getId(), fare.getToStation().getId(), fare.getSeatClass()), fare);
         }
 
-        log.info("Fair map: {}", fairMap.keySet());
         return fairMap;
     }
 }

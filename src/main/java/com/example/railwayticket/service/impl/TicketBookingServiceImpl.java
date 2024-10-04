@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,8 +35,6 @@ public class TicketBookingServiceImpl implements TicketBookingService {
 
     @Override
     public TicketSearchResponse searchTicket(long fromStationId, long toStationId, LocalDate journeyDate) {
-        log.info("From station: {}, to station: {}, date: {}", fromStationId, toStationId, journeyDate);
-
         List<SeatForJourney> seatForJourneys = seatForJourneyRepository.searchSeatForJourney(
                 fromStationId, toStationId, journeyDate, AVAILABLE, BOOKED,
                 AppDateTimeUtils.nowInBD().minusMinutes(BOOKING_VALIDITY)
@@ -63,7 +62,6 @@ public class TicketBookingServiceImpl implements TicketBookingService {
             trainCoachMap.put(train, defaultList);
         }
 
-        log.info("TrainCoachMap: {}", trainCoachMap);
         return trainCoachMap;
     }
 
@@ -95,10 +93,14 @@ public class TicketBookingServiceImpl implements TicketBookingService {
                 trainResponse.setDestinationArrivalTime(firstSeatForJourney.getDestinationArrivalTime());
 
                 Map<Long, SeatForJourney> seatForJourneyMap = buildSeatForJourneyMap(seatForJourneys);
-                for (Seat seat : coach.getSeats()) {
+                List<Seat> seats = coach.getSeats()
+                        .stream()
+                        .sorted(Comparator.comparing(Seat::getOrdering))
+                        .toList();
+
+                for (Seat seat : seats) {
                     TicketSeatResponse seatResponse = new TicketSeatResponse();
                     seatResponse.setSeatNumber(seat.getNumber());
-                    coachResponse.getSeats().add(seatResponse);
                     if (seatForJourneyMap.containsKey(seat.getId())) {
                         SeatForJourney seatForJourney = seatForJourneyMap.get(seat.getId());
                         seatResponse.setId(seatForJourney.getId());
@@ -113,7 +115,6 @@ public class TicketBookingServiceImpl implements TicketBookingService {
             ticketSearchResponse.getTrains().add(trainResponse);
         }
 
-        log.info("TicketSearchResponse: {}", ticketSearchResponse);
         return ticketSearchResponse;
     }
 
@@ -122,7 +123,6 @@ public class TicketBookingServiceImpl implements TicketBookingService {
         for (SeatForJourney seatForJourney : seatForJourneys) {
             seatForJourneyMap.put(seatForJourney.getSeat().getId(), seatForJourney);
         }
-        log.info("SeatForJourneyMap: {}", seatForJourneyMap);
         return seatForJourneyMap;
     }
 }
