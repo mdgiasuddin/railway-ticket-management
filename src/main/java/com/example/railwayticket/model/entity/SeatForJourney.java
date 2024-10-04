@@ -55,6 +55,11 @@ public class SeatForJourney {
     @Enumerated(STRING)
     private SeatStatus seatStatus;
 
+    @ManyToOne(fetch = LAZY)
+    private User user;
+
+    private LocalDateTime bookingTime;
+
     @Column(nullable = false)
     private LocalDate journeyDate;
 

@@ -9,6 +9,7 @@ import com.example.railwayticket.model.entity.SeatForJourney;
 import com.example.railwayticket.model.entity.Train;
 import com.example.railwayticket.repository.SeatForJourneyRepository;
 import com.example.railwayticket.service.intface.TicketBookingService;
+import com.example.railwayticket.utils.AppDateTimeUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.example.railwayticket.constant.AppConstant.BOOKING_VALIDITY;
+import static com.example.railwayticket.model.enums.SeatStatus.AVAILABLE;
+import static com.example.railwayticket.model.enums.SeatStatus.BOOKED;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -30,7 +35,10 @@ public class TicketBookingServiceImpl implements TicketBookingService {
     public TicketSearchResponse searchTicket(long fromStationId, long toStationId, LocalDate journeyDate) {
         log.info("From station: {}, to station: {}, date: {}", fromStationId, toStationId, journeyDate);
 
-        List<SeatForJourney> seatForJourneys = seatForJourneyRepository.searchSeatForJourney(fromStationId, toStationId, journeyDate);
+        List<SeatForJourney> seatForJourneys = seatForJourneyRepository.searchSeatForJourney(
+                fromStationId, toStationId, journeyDate, AVAILABLE, BOOKED,
+                AppDateTimeUtils.nowInBD().minusMinutes(BOOKING_VALIDITY)
+        );
         Map<Train, List<Map.Entry<Coach, List<SeatForJourney>>>> trainCoachMap = organizeSeats(seatForJourneys);
 
         return convertToResponse(trainCoachMap);
