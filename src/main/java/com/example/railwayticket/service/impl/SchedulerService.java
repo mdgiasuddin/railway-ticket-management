@@ -1,7 +1,7 @@
 package com.example.railwayticket.service.impl;
 
 import com.example.railwayticket.model.entity.Coach;
-import com.example.railwayticket.model.entity.Fair;
+import com.example.railwayticket.model.entity.Fare;
 import com.example.railwayticket.model.entity.Seat;
 import com.example.railwayticket.model.entity.SeatForJourney;
 import com.example.railwayticket.model.entity.TrainRoute;
@@ -39,7 +39,7 @@ public class SchedulerService {
     private final TrainRouteRepository trainRouteRepository;
     private final FairRepository fairRepository;
     private final SeatForJourneyRepository seatForJourneyRepository;
-    private final LocalDate journeyDate = LocalDate.parse("2024-10-04");
+    private final LocalDate journeyDate = LocalDate.parse("2024-10-06");
 
     @Transactional
 //    @Scheduled(initialDelay = 1000)
@@ -65,8 +65,8 @@ public class SchedulerService {
             Set<TrainRouteStation> trainRouteStations = trainRoute.getTrainRouteStations();
             Map<Long, TrainRouteStation> stationMap = buildStationMap(trainRouteStations);
             List<Long> stationIds = getStationIds(trainRouteStations);
-            List<Fair> fairs = fairRepository.getAllRouteFairs(stationIds);
-            Map<String, Fair> fairMap = buildFairMap(fairs);
+            List<Fare> fares = fairRepository.getAllRouteFairs(stationIds);
+            Map<String, Fare> fareMap = buildFairMap(fares);
 
             List<SeatForJourney> seatForJourneys = new ArrayList<>();
             for (Coach coach : trainRoute.getTrain().getCoaches()) {
@@ -79,18 +79,19 @@ public class SchedulerService {
                         log.info("From station {}, to station {}, class {}", fromStationId, toStationId, coach.getSeatClass());
 
                         SeatForJourney seatForJourney = new SeatForJourney();
+                        seatForJourney.setIdKey(MiscUtils.generateIdKey());
                         seatForJourney.setFromStation(stationMap.get(fromStationId).getStation());
                         seatForJourney.setToStation(stationMap.get(toStationId).getStation());
                         seatForJourney.setSeat(seat);
                         seatForJourney.setTrainRoute(trainRoute);
-                        seatForJourney.setFair(fairMap.get(MiscUtils.generateFairKey(fromStationId, toStationId, coach.getSeatClass()))
+                        seatForJourney.setFare(fareMap.get(MiscUtils.generateFareKey(fromStationId, toStationId, coach.getSeatClass()))
                                 .getAmount());
                         seatForJourney.setSeatStatus(AVAILABLE);
                         LocalDateTime journeyDateTime = LocalDateTime.of(journeyDate, trainRoute.getStartTime())
                                 .plusMinutes(stationMap.get(fromStationId).getTimeFromStartStation());
                         seatForJourney.setJourneyDate(journeyDateTime.toLocalDate());
                         seatForJourney.setJourneyTime(journeyDateTime.toLocalTime());
-                        seatForJourney.setJourneyEndTime(LocalDateTime.of(journeyDate, trainRoute.getStartTime())
+                        seatForJourney.setDestinationArrivalTime(LocalDateTime.of(journeyDate, trainRoute.getStartTime())
                                 .plusMinutes(stationMap.get(toStationId).getTimeFromStartStation()));
                         seatForJourneys.add(seatForJourney);
                     }
@@ -118,10 +119,10 @@ public class SchedulerService {
         return stationIds;
     }
 
-    private Map<String, Fair> buildFairMap(Collection<Fair> fairs) {
-        Map<String, Fair> fairMap = new HashMap<>();
-        for (Fair fair : fairs) {
-            fairMap.put(MiscUtils.generateFairKey(fair.getFromStation().getId(), fair.getToStation().getId(), fair.getSeatClass()), fair);
+    private Map<String, Fare> buildFairMap(Collection<Fare> fares) {
+        Map<String, Fare> fairMap = new HashMap<>();
+        for (Fare fare : fares) {
+            fairMap.put(MiscUtils.generateFareKey(fare.getFromStation().getId(), fare.getToStation().getId(), fare.getSeatClass()), fare);
         }
 
         log.info("Fair map: {}", fairMap.keySet());

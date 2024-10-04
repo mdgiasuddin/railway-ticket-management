@@ -1,6 +1,6 @@
 package com.example.railwayticket.controller;
 
-import com.example.railwayticket.model.dto.response.TicketSearchResponse;
+import com.example.railwayticket.model.dto.response.ticketbooking.TicketSearchResponse;
 import com.example.railwayticket.service.intface.TicketBookingService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;

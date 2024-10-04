@@ -1,6 +1,6 @@
 package com.example.railwayticket.service.intface;
 
-import com.example.railwayticket.model.dto.response.TicketSearchResponse;
+import com.example.railwayticket.model.dto.response.ticketbooking.TicketSearchResponse;
 
 import java.time.LocalDate;
 

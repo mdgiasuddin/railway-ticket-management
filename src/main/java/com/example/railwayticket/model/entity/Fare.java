@@ -20,7 +20,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Table
 @Getter
 @Setter
-public class Fair {
+public class Fare {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private long id;

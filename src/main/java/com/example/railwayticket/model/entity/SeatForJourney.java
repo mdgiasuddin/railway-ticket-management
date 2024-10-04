@@ -29,6 +29,9 @@ public class SeatForJourney {
     @GeneratedValue(strategy = IDENTITY)
     private long id;
 
+    @Column(nullable = false, columnDefinition = "varchar(32)")
+    private String idKey;
+
     @ManyToOne(fetch = LAZY)
     @JoinColumn(nullable = false)
     private Station fromStation;
@@ -46,7 +49,7 @@ public class SeatForJourney {
     private TrainRoute trainRoute;
 
     @Column(nullable = false)
-    private Double fair;
+    private Double fare;
 
     @Column(nullable = false, columnDefinition = "varchar(10)")
     @Enumerated(STRING)
@@ -59,5 +62,5 @@ public class SeatForJourney {
     private LocalTime journeyTime;
 
     @Column(nullable = false)
-    private LocalDateTime journeyEndTime;
+    private LocalDateTime destinationArrivalTime;
 }
