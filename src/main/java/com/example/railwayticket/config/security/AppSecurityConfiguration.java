@@ -28,7 +28,7 @@ import java.util.Collections;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-public class SecurityConfiguration {
+public class AppSecurityConfiguration {
 
     @Bean
     public SecureRandom secureRandom() {
