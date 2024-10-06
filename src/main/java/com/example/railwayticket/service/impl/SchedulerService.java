@@ -54,7 +54,7 @@ public class SchedulerService {
             trainRoutePage = trainRouteRepository.findTrainRoutesByIdIsNotNull(pageable);
 
             for (TrainRoute trainRoute : trainRoutePage) {
-                if (!trainRoute.getTrain().isActive() || !journeyDate.getDayOfWeek().equals(trainRoute.getOffDay()))
+                if (!trainRoute.getTrain().isActive() || journeyDate.getDayOfWeek().equals(trainRoute.getOffDay()))
                     continue;
                 createSeatsForJourney(trainRoute);
             }
