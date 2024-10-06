@@ -4,6 +4,8 @@ import com.example.railwayticket.model.entity.Coach;
 import com.example.railwayticket.model.enumeration.SeatClass;
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
 public class CoachResponse {
     private final long id;
@@ -11,6 +13,7 @@ public class CoachResponse {
     private final SeatClass seatClass;
     private final int totalSeats;
     private final boolean active;
+    private final List<Long> seatOrientation;
 
     public CoachResponse(Coach coach) {
         this.id = coach.getId();
@@ -18,5 +21,6 @@ public class CoachResponse {
         this.seatClass = coach.getSeatClass();
         this.totalSeats = coach.getTotalSeats();
         this.active = coach.isActive();
+        this.seatOrientation = coach.getSeatOrientation();
     }
 }
