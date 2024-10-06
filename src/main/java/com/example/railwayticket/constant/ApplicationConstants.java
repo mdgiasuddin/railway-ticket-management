@@ -7,5 +7,5 @@ public class ApplicationConstants {
     }
 
     public static final String TOKEN_TYPE = "Bearer ";
-    public static final int PRESENCE_BEFORE_START = 30;
+    public static final int BOOKING_VALIDITY = 5;
 }

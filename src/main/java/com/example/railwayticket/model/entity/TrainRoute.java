@@ -1,6 +1,6 @@
 package com.example.railwayticket.model.entity;
 
-import com.example.railwayticket.model.enums.RouteType;
+import com.example.railwayticket.model.enumeration.RouteType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;

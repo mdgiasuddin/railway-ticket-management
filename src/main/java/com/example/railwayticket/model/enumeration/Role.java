@@ -1,4 +1,4 @@
-package com.example.railwayticket.model.enums;
+package com.example.railwayticket.model.enumeration;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -6,5 +6,5 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum Role {
-    ADMIN, USER
+    ADMIN, USER, COUNTER_MASTER
 }

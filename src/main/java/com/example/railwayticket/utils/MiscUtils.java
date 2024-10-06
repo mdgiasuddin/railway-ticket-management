@@ -1,6 +1,6 @@
 package com.example.railwayticket.utils;
 
-import com.example.railwayticket.model.enums.SeatClass;
+import com.example.railwayticket.model.enumeration.SeatClass;
 import lombok.NoArgsConstructor;
 
 import java.util.UUID;

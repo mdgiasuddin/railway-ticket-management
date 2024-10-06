@@ -23,9 +23,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.example.railwayticket.constant.AppConstant.BOOKING_VALIDITY;
-import static com.example.railwayticket.model.enums.SeatStatus.AVAILABLE;
-import static com.example.railwayticket.model.enums.SeatStatus.BOOKED;
+import static com.example.railwayticket.constant.ApplicationConstants.BOOKING_VALIDITY;
+import static com.example.railwayticket.model.enumeration.SeatStatus.AVAILABLE;
+import static com.example.railwayticket.model.enumeration.SeatStatus.BOOKED;
 
 @Slf4j
 @Service

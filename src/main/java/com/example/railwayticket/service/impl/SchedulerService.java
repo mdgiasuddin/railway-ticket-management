@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.example.railwayticket.model.enums.RouteType.UP;
-import static com.example.railwayticket.model.enums.SeatStatus.AVAILABLE;
+import static com.example.railwayticket.model.enumeration.RouteType.UP;
+import static com.example.railwayticket.model.enumeration.SeatStatus.AVAILABLE;
 
 @Service
 @RequiredArgsConstructor

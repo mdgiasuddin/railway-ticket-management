@@ -1,6 +1,6 @@
 package com.example.railwayticket.model.dto.response.ticketbooking;
 
-import com.example.railwayticket.model.enums.SeatClass;
+import com.example.railwayticket.model.enumeration.SeatClass;
 import lombok.Getter;
 import lombok.Setter;
 

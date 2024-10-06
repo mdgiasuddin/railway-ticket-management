@@ -1,6 +1,6 @@
 package com.example.railwayticket.model.entity;
 
-import com.example.railwayticket.model.enums.SeatClass;
+import com.example.railwayticket.model.enumeration.SeatClass;
 import com.example.railwayticket.utils.converter.LongListConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -51,6 +51,9 @@ public class Coach {
     @Column(columnDefinition = "varchar(255)")
     @Convert(converter = LongListConverter.class)
     private List<Long> seatOrientation = new ArrayList<>();
+
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean active = false;
 
     @OneToMany(mappedBy = "coach", fetch = LAZY)
     private Set<Seat> seats = new HashSet<>();

@@ -63,13 +63,13 @@ public class SwaggerBasicAuthFilter extends OncePerRequestFilter {
         return username.equals(swaggerUsername) && passwordEncoder.matches(password, swaggerPassword);
     }
 
-    private String[] extractAndDecodeHeader(String header) {
+    private String[] extractAndDecodeHeader(String header) throws IOException {
         byte[] base64Token = header.substring(6).getBytes(StandardCharsets.UTF_8);
         byte[] decoded;
         try {
             decoded = Base64.getDecoder().decode(base64Token);
         } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Failed to decode basic authentication token");
+            throw new IOException("Failed to decode basic authentication token");
         }
 
         String token = new String(decoded, StandardCharsets.UTF_8);
@@ -77,7 +77,7 @@ public class SwaggerBasicAuthFilter extends OncePerRequestFilter {
         int delim = token.indexOf(":");
 
         if (delim == -1) {
-            throw new RuntimeException("Invalid basic authentication token");
+            throw new IOException("Invalid basic authentication token");
         }
 
         return new String[]{token.substring(0, delim), token.substring(delim + 1)};

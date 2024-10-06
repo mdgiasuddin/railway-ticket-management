@@ -1,6 +1,6 @@
 package com.example.railwayticket.model.entity;
 
-import com.example.railwayticket.model.enums.SeatStatus;
+import com.example.railwayticket.model.enumeration.SeatStatus;
 import com.example.railwayticket.utils.AppDateTimeUtils;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,9 +18,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-import static com.example.railwayticket.constant.AppConstant.BOOKING_VALIDITY;
-import static com.example.railwayticket.model.enums.SeatStatus.AVAILABLE;
-import static com.example.railwayticket.model.enums.SeatStatus.BOOKED;
+import static com.example.railwayticket.constant.ApplicationConstants.BOOKING_VALIDITY;
+import static com.example.railwayticket.model.enumeration.SeatStatus.AVAILABLE;
+import static com.example.railwayticket.model.enumeration.SeatStatus.BOOKED;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;

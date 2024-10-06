@@ -11,10 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.example.railwayticket.constant.APIEndpointConstant.AUTHENTICATION_ENDPOINT;
-
 @RestController
-@RequestMapping(AUTHENTICATION_ENDPOINT)
+@RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthenticationController {
 

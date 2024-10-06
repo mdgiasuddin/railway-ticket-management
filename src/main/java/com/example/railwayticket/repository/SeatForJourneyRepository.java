@@ -1,7 +1,7 @@
 package com.example.railwayticket.repository;
 
 import com.example.railwayticket.model.entity.SeatForJourney;
-import com.example.railwayticket.model.enums.SeatStatus;
+import com.example.railwayticket.model.enumeration.SeatStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

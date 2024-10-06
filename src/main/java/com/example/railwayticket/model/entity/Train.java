@@ -24,11 +24,14 @@ public class Train {
     @GeneratedValue(strategy = IDENTITY)
     private long id;
 
-    @Column(nullable = false, columnDefinition = "varchar(50)")
+    @Column(nullable = false, unique = true, columnDefinition = "varchar(50)")
     private String name;
 
     @OneToMany(mappedBy = "train", fetch = LAZY)
     private Set<Coach> coaches;
+
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean active = false;
 
     @Override
     public boolean equals(Object o) {
