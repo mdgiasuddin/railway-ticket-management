@@ -13,6 +13,8 @@ public class LongListConverter implements AttributeConverter<List<Long>, String>
 
     @Override
     public String convertToDatabaseColumn(List<Long> list) {
+        if (list == null) return null;
+
         return list.stream()
                 .map(String::valueOf)
                 .collect(Collectors.joining(","));

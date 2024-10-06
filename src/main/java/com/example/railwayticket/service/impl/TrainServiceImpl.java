@@ -2,6 +2,7 @@ package com.example.railwayticket.service.impl;
 
 import com.example.railwayticket.exception.ResourceNotFoundException;
 import com.example.railwayticket.model.dto.request.train.TrainCreateRequest;
+import com.example.railwayticket.model.dto.request.train.TrainStatusUpdateRequest;
 import com.example.railwayticket.model.dto.request.train.TrainUpdateRequest;
 import com.example.railwayticket.model.dto.response.TrainResponse;
 import com.example.railwayticket.model.entity.Train;
@@ -23,6 +24,17 @@ public class TrainServiceImpl implements TrainService {
     private final TrainRepository trainRepository;
 
     @Override
+    public Train getTrainById(long id) {
+        return trainRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error("No train found with id: {}", id);
+                    return new ResourceNotFoundException(
+                            TRAIN_NOT_FOUND,
+                            "No train found with id: " + id);
+                });
+    }
+
+    @Override
     public List<TrainResponse> getAllTrains() {
         return trainRepository.findAll()
                 .stream()
@@ -40,15 +52,15 @@ public class TrainServiceImpl implements TrainService {
 
     @Override
     public TrainResponse updateTrain(TrainUpdateRequest request) {
-        Train train = trainRepository.findById(request.id())
-                .orElseThrow(() -> {
-                    log.error("No train found with id: {}", request.id());
-                    return new ResourceNotFoundException(
-                            TRAIN_NOT_FOUND,
-                            "No train found with id: " + request.id());
-                });
-
+        Train train = getTrainById(request.id());
         train.setName(request.name());
+        train.setActive(request.active());
+        return new TrainResponse(trainRepository.save(train));
+    }
+
+    @Override
+    public TrainResponse updateTrainStatus(TrainStatusUpdateRequest request) {
+        Train train = getTrainById(request.id());
         train.setActive(request.active());
         return new TrainResponse(trainRepository.save(train));
     }

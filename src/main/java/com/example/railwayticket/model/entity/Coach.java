@@ -46,7 +46,7 @@ public class Coach {
     private Train train;
 
     @Column(nullable = false, columnDefinition = "int default 0")
-    private Integer totalSeats = 0;
+    private int totalSeats = 0;
 
     @Column(columnDefinition = "varchar(255)")
     @Convert(converter = LongListConverter.class)
