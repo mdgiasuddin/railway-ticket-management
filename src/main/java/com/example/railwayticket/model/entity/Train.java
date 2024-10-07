@@ -2,8 +2,6 @@ package com.example.railwayticket.model.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -13,16 +11,12 @@ import java.util.Objects;
 import java.util.Set;
 
 import static jakarta.persistence.FetchType.LAZY;
-import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Table
 @Getter
 @Setter
-public class Train {
-    @Id
-    @GeneratedValue(strategy = IDENTITY)
-    private long id;
+public class Train extends BaseEntity {
 
     @Column(nullable = false, unique = true, columnDefinition = "varchar(50)")
     private String name;
@@ -37,18 +31,18 @@ public class Train {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Train train)) return false;
-        return id == train.id;
+        return getId() == train.getId();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Objects.hashCode(getId());
     }
 
     @Override
     public String toString() {
         return "Train{" +
-                "id=" + id +
+                "id=" + getId() +
                 ", name='" + name + '\'' +
                 '}';
     }

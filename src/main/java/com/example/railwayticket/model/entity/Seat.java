@@ -4,8 +4,6 @@ import com.example.railwayticket.utils.converter.LongListConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -17,16 +15,12 @@ import java.util.List;
 import java.util.Objects;
 
 import static jakarta.persistence.FetchType.LAZY;
-import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Table
 @Getter
 @Setter
-public class Seat {
-    @Id
-    @GeneratedValue(strategy = IDENTITY)
-    private long id;
+public class Seat extends BaseEntity {
 
     @Column(nullable = false, columnDefinition = "varchar(5)")
     private String number;
@@ -50,18 +44,18 @@ public class Seat {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Seat seat)) return false;
-        return id == seat.id;
+        return getId() == seat.getId();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Objects.hashCode(getId());
     }
 
     @Override
     public String toString() {
         return "Seat{" +
-                "id=" + id +
+                "id=" + getId() +
                 ", number='" + number + '\'' +
                 ", ordering=" + ordering +
                 '}';

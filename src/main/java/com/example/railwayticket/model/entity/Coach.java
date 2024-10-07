@@ -6,8 +6,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -23,16 +21,12 @@ import java.util.Set;
 
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
-import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Table
 @Getter
 @Setter
-public class Coach {
-    @Id
-    @GeneratedValue(strategy = IDENTITY)
-    private long id;
+public class Coach extends BaseEntity {
 
     @Column(nullable = false, columnDefinition = "varchar(5)")
     private String name;
@@ -62,18 +56,18 @@ public class Coach {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Coach coach)) return false;
-        return id == coach.id;
+        return getId() == coach.getId();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Objects.hashCode(getId());
     }
 
     @Override
     public String toString() {
         return "Coach{" +
-                "id=" + id +
+                "id=" + getId() +
                 ", name='" + name + '\'' +
                 ", seatClass=" + seatClass +
                 '}';

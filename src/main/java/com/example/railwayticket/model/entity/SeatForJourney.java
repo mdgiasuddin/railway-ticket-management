@@ -5,8 +5,6 @@ import com.example.railwayticket.utils.AppDateTimeUtils;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -23,16 +21,12 @@ import static com.example.railwayticket.model.enumeration.SeatStatus.AVAILABLE;
 import static com.example.railwayticket.model.enumeration.SeatStatus.BOOKED;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
-import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Table
 @Getter
 @Setter
-public class SeatForJourney {
-    @Id
-    @GeneratedValue(strategy = IDENTITY)
-    private long id;
+public class SeatForJourney extends BaseEntity {
 
     @Column(nullable = false, columnDefinition = "varchar(32)")
     private String idKey;
@@ -85,7 +79,7 @@ public class SeatForJourney {
     @Override
     public String toString() {
         return "SeatForJourney{" +
-                "id=" + id +
+                "id=" + getId() +
                 ", seat=" + seat +
                 ", fromStation=" + fromStation +
                 ", toStation=" + toStation +
