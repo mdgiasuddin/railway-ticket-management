@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,10 +40,10 @@ public class SchedulerService {
     private final TrainRouteRepository trainRouteRepository;
     private final FairRepository fairRepository;
     private final SeatForJourneyRepository seatForJourneyRepository;
-    private final LocalDate journeyDate = LocalDate.parse("2024-10-05");
+    private final LocalDate journeyDate = LocalDate.parse("2024-10-08");
 
     @Transactional
-//    @Scheduled(initialDelay = 1000)
+    @Scheduled(initialDelay = 1000)
     public void scheduleTrainJourney() {
         log.info("Scheduler started at: {}", LocalDateTime.now());
         int page = 0;

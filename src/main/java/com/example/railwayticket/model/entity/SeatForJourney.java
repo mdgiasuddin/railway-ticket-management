@@ -61,7 +61,7 @@ public class SeatForJourney {
     private SeatStatus seatStatus;
 
     @ManyToOne(fetch = LAZY)
-    private User user;
+    private User bookedBy;
 
     private LocalDateTime bookingTime;
 

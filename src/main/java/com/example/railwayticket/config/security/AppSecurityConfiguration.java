@@ -24,6 +24,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.security.SecureRandom;
 import java.util.Collections;
+import java.util.Random;
 
 @Configuration
 @EnableWebSecurity
@@ -31,7 +32,7 @@ import java.util.Collections;
 public class AppSecurityConfiguration {
 
     @Bean
-    public SecureRandom secureRandom() {
+    public Random random() {
         return new SecureRandom();
     }
 
