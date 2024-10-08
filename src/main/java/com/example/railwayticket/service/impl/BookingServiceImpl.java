@@ -4,6 +4,7 @@ import com.example.railwayticket.exception.ResourceNotFoundException;
 import com.example.railwayticket.exception.RuleViolationException;
 import com.example.railwayticket.model.dto.TicketData;
 import com.example.railwayticket.model.dto.request.booking.TicketBookingRequest;
+import com.example.railwayticket.model.dto.request.booking.TicketConfirmationRequest;
 import com.example.railwayticket.model.dto.response.ticketbooking.TicketCoachResponse;
 import com.example.railwayticket.model.dto.response.ticketbooking.TicketSearchResponse;
 import com.example.railwayticket.model.dto.response.ticketbooking.TicketSeatResponse;
@@ -17,15 +18,18 @@ import com.example.railwayticket.repository.SeatForJourneyRepository;
 import com.example.railwayticket.service.intface.BookingService;
 import com.example.railwayticket.service.intface.TicketPrintService;
 import com.example.railwayticket.utils.AppDateTimeUtils;
+import com.example.railwayticket.utils.MiscUtils;
 import com.example.railwayticket.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -47,9 +51,9 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public TicketSearchResponse searchTicket(long fromStationId, long toStationId, LocalDate journeyDate) {
         List<SeatForJourney> seatForJourneys = seatForJourneyRepository.searchSeatForJourney(
-                fromStationId, toStationId, journeyDate, AVAILABLE, BOOKED,
-                AppDateTimeUtils.nowInBD().minusMinutes(BOOKING_VALIDITY)
+                fromStationId, toStationId, journeyDate
         );
+
         Map<Train, List<Map.Entry<Coach, List<SeatForJourney>>>> trainCoachMap = organizeSeats(seatForJourneys);
 
         return convertToResponse(trainCoachMap);
@@ -85,16 +89,8 @@ public class BookingServiceImpl implements BookingService {
 
             for (Map.Entry<Coach, List<SeatForJourney>> coachEntry : trainEntry.getValue()) {
                 Coach coach = coachEntry.getKey();
-                TicketCoachResponse coachResponse = new TicketCoachResponse();
-                coachResponse.setCoachName(coach.getName());
-                coachResponse.setSeatClass(coach.getSeatClass());
-                coachResponse.setSeatOrientation(coach.getSeatOrientation());
-
                 List<SeatForJourney> seatForJourneys = coachEntry.getValue();
-                coachResponse.setAvailableSeats(seatForJourneys.size());
-
                 SeatForJourney firstSeatForJourney = seatForJourneys.getFirst();
-                coachResponse.setFare(firstSeatForJourney.getFare());
 
                 trainResponse.setRoute(firstSeatForJourney.getTrainRoute().getDescription());
                 trainResponse.setDepartureTime(LocalDateTime.of(
@@ -104,24 +100,33 @@ public class BookingServiceImpl implements BookingService {
                 trainResponse.setDestinationArrivalTime(firstSeatForJourney.getDestinationArrivalTime());
 
                 Map<Long, SeatForJourney> seatForJourneyMap = buildSeatForJourneyMap(seatForJourneys);
-                List<Seat> seats = coach.getSeats()
-                        .stream()
-                        .sorted(Comparator.comparing(Seat::getOrdering))
-                        .toList();
+                if (!seatForJourneyMap.isEmpty()) {
+                    TicketCoachResponse coachResponse = new TicketCoachResponse();
+                    coachResponse.setCoachName(coach.getName());
+                    coachResponse.setSeatClass(coach.getSeatClass());
+                    coachResponse.setSeatOrientation(coach.getSeatOrientation());
+                    coachResponse.setAvailableSeats(seatForJourneys.size());
+                    coachResponse.setFare(firstSeatForJourney.getFare());
 
-                for (Seat seat : seats) {
-                    TicketSeatResponse seatResponse = new TicketSeatResponse();
-                    seatResponse.setSeatNumber(seat.getNumber());
-                    if (seatForJourneyMap.containsKey(seat.getId())) {
-                        SeatForJourney seatForJourney = seatForJourneyMap.get(seat.getId());
-                        seatResponse.setId(seatForJourney.getId());
-                        seatResponse.setIdKey(seatForJourney.getIdKey());
-                        seatResponse.setAvailable(true);
+                    List<Seat> seats = coach.getSeats()
+                            .stream()
+                            .sorted(Comparator.comparing(Seat::getOrdering))
+                            .toList();
+
+                    for (Seat seat : seats) {
+                        TicketSeatResponse seatResponse = new TicketSeatResponse();
+                        seatResponse.setSeatNumber(seat.getNumber());
+                        if (seatForJourneyMap.containsKey(seat.getId())) {
+                            SeatForJourney seatForJourney = seatForJourneyMap.get(seat.getId());
+                            seatResponse.setId(seatForJourney.getId());
+                            seatResponse.setIdKey(seatForJourney.getIdKey());
+                            seatResponse.setAvailable(true);
+                        }
+                        coachResponse.getSeats().add(seatResponse);
                     }
-                    coachResponse.getSeats().add(seatResponse);
+                    trainResponse.getCoaches().add(coachResponse);
+                    trainResponse.setAvailableSeats(trainResponse.getAvailableSeats() + coachResponse.getAvailableSeats());
                 }
-                trainResponse.getCoaches().add(coachResponse);
-                trainResponse.setAvailableSeats(trainResponse.getAvailableSeats() + coachResponse.getAvailableSeats());
             }
             ticketSearchResponse.getTrains().add(trainResponse);
         }
@@ -132,7 +137,9 @@ public class BookingServiceImpl implements BookingService {
     private Map<Long, SeatForJourney> buildSeatForJourneyMap(List<SeatForJourney> seatForJourneys) {
         Map<Long, SeatForJourney> seatForJourneyMap = new HashMap<>();
         for (SeatForJourney seatForJourney : seatForJourneys) {
-            seatForJourneyMap.put(seatForJourney.getSeat().getId(), seatForJourney);
+            if (AVAILABLE.equals(seatForJourney.getSeatStatus()) || (BOOKED.equals(seatForJourney.getSeatStatus()) &&
+                    AppDateTimeUtils.nowInBD().minusMinutes(BOOKING_VALIDITY).isAfter(seatForJourney.getBookingTime())))
+                seatForJourneyMap.put(seatForJourney.getSeat().getId(), seatForJourney);
         }
         return seatForJourneyMap;
     }
@@ -167,7 +174,29 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Resource confirmAndPrintTicket() {
-        return ticketPrintService.printTicket(new TicketData());
+    public ResponseEntity<Resource> confirmAndPrintTicket(TicketConfirmationRequest request) {
+        User currentUser = SecurityUtils.getCurrentUser()
+                .orElseThrow(() -> {
+                    log.error("User must be logged in to confirm a ticket");
+                    return new RuleViolationException("LOGGED_IN_USER_NOT_FOUND", "User must be logged in to confirm a ticket");
+                });
+
+        List<SeatForJourney> seatForJourneys = seatForJourneyRepository.findByIdIn(request.ids());
+        if (seatForJourneys.size() != request.ids().size()) {
+            throw new ResourceNotFoundException("INVALID_TICKET_ID", "Some ids are not valid");
+        }
+        for (SeatForJourney seatForJourney : seatForJourneys) {
+            if (!BOOKED.equals(seatForJourney.getSeatStatus()) || !currentUser.equals(seatForJourney.getBookedBy())) {
+                throw new RuleViolationException("TICKET_CONFIRMATION_DENIED", "Ticket can be confirmed only by booked user");
+            }
+            if (AppDateTimeUtils.nowInBD().minusMinutes(BOOKING_VALIDITY).isAfter(seatForJourney.getBookingTime())) {
+                throw new RuleViolationException("CONFIRMATION_PERIOD_EXPIRED", "Ticket confirmation period expired");
+            }
+        }
+
+        Resource resource = ticketPrintService.printTicket(new TicketData());
+        String filename = AppDateTimeUtils.nowInBD()
+                .format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".pdf";
+        return MiscUtils.convertToFile(resource, filename);
     }
 }
