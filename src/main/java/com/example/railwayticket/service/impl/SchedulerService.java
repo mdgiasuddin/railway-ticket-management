@@ -39,7 +39,7 @@ public class SchedulerService {
     private final TrainRouteRepository trainRouteRepository;
     private final FairRepository fairRepository;
     private final SeatForJourneyRepository seatForJourneyRepository;
-    private final LocalDate journeyDate = LocalDate.parse("2024-10-08");
+    private final LocalDate journeyDate = LocalDate.parse("2024-10-10");
 
     @Transactional
 //    @Scheduled(initialDelay = 1000)

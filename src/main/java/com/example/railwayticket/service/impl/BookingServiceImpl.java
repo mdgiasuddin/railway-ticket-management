@@ -5,6 +5,7 @@ import com.example.railwayticket.exception.RuleViolationException;
 import com.example.railwayticket.model.dto.TicketData;
 import com.example.railwayticket.model.dto.request.booking.TicketBookingRequest;
 import com.example.railwayticket.model.dto.request.booking.TicketConfirmationRequest;
+import com.example.railwayticket.model.dto.response.ticketbooking.TicketClassResponse;
 import com.example.railwayticket.model.dto.response.ticketbooking.TicketCoachResponse;
 import com.example.railwayticket.model.dto.response.ticketbooking.TicketSearchResponse;
 import com.example.railwayticket.model.dto.response.ticketbooking.TicketSeatResponse;
@@ -87,6 +88,8 @@ public class BookingServiceImpl implements BookingService {
             TicketTrainResponse trainResponse = new TicketTrainResponse();
             trainResponse.setTrainName(train.getName());
 
+            Map<TicketClassResponse, List<TicketCoachResponse>> classResponseMap = new HashMap<>();
+
             for (Map.Entry<Coach, List<SeatForJourney>> coachEntry : trainEntry.getValue()) {
                 Coach coach = coachEntry.getKey();
                 List<SeatForJourney> seatForJourneys = coachEntry.getValue();
@@ -103,10 +106,8 @@ public class BookingServiceImpl implements BookingService {
                 if (!seatForJourneyMap.isEmpty()) {
                     TicketCoachResponse coachResponse = new TicketCoachResponse();
                     coachResponse.setCoachName(coach.getName());
-                    coachResponse.setSeatClass(coach.getSeatClass());
                     coachResponse.setSeatOrientation(coach.getSeatOrientation());
-                    coachResponse.setAvailableSeats(seatForJourneys.size());
-                    coachResponse.setFare(firstSeatForJourney.getFare());
+                    coachResponse.setAvailableSeats(seatForJourneyMap.size());
 
                     List<Seat> seats = coach.getSeats()
                             .stream()
@@ -124,14 +125,37 @@ public class BookingServiceImpl implements BookingService {
                         }
                         coachResponse.getSeats().add(seatResponse);
                     }
-                    trainResponse.getCoaches().add(coachResponse);
+                    TicketClassResponse classResponse = new TicketClassResponse(coach.getSeatClass(), firstSeatForJourney.getFare());
+                    List<TicketCoachResponse> defaultList = classResponseMap.getOrDefault(classResponse, new ArrayList<>());
+                    defaultList.add(coachResponse);
+                    classResponseMap.put(classResponse, defaultList);
                     trainResponse.setAvailableSeats(trainResponse.getAvailableSeats() + coachResponse.getAvailableSeats());
                 }
             }
+
+            trainResponse.setClasses(convertToClassResponse(classResponseMap));
             ticketSearchResponse.getTrains().add(trainResponse);
         }
 
         return ticketSearchResponse;
+    }
+
+    private List<TicketClassResponse> convertToClassResponse(Map<TicketClassResponse, List<TicketCoachResponse>> classResponseMap) {
+        List<TicketClassResponse> classResponses = new ArrayList<>();
+        for (Map.Entry<TicketClassResponse, List<TicketCoachResponse>> entry : classResponseMap.entrySet()) {
+            TicketClassResponse classResponse = entry.getKey();
+            List<TicketCoachResponse> coachResponses = entry.getValue();
+            classResponse.setCoaches(coachResponses);
+
+            int availableSeats = 0;
+            for (TicketCoachResponse coachResponse : coachResponses) {
+                availableSeats += coachResponse.getAvailableSeats();
+            }
+            classResponse.setAvailableSeats(availableSeats);
+            classResponses.add(classResponse);
+        }
+
+        return classResponses;
     }
 
     private Map<Long, SeatForJourney> buildSeatForJourneyMap(List<SeatForJourney> seatForJourneys) {
