@@ -1,6 +1,6 @@
 package com.example.railwayticket.model.dto.response.ticketbooking;
 
-import com.example.railwayticket.model.enumeration.SeatClass;
+import com.example.railwayticket.model.enumeration.TicketClass;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,13 +12,13 @@ import java.util.Objects;
 @Setter
 public class TicketClassResponse {
 
-    private SeatClass seatClass;
+    private TicketClass ticketClass;
     private double fare;
     private int availableSeats;
     private List<TicketCoachResponse> coaches;
 
-    public TicketClassResponse(SeatClass seatClass, double fare) {
-        this.seatClass = seatClass;
+    public TicketClassResponse(TicketClass ticketClass, double fare) {
+        this.ticketClass = ticketClass;
         this.fare = fare;
         this.availableSeats = 0;
         this.coaches = new ArrayList<>();
@@ -28,11 +28,11 @@ public class TicketClassResponse {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof TicketClassResponse that)) return false;
-        return seatClass == that.seatClass;
+        return ticketClass == that.ticketClass;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(seatClass);
+        return Objects.hashCode(ticketClass);
     }
 }

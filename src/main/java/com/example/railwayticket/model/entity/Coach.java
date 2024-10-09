@@ -1,6 +1,6 @@
 package com.example.railwayticket.model.entity;
 
-import com.example.railwayticket.model.enumeration.SeatClass;
+import com.example.railwayticket.model.enumeration.TicketClass;
 import com.example.railwayticket.utils.converter.LongListConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -33,7 +33,7 @@ public class Coach extends BaseEntity {
 
     @Column(nullable = false, columnDefinition = "varchar(10)")
     @Enumerated(STRING)
-    private SeatClass seatClass;
+    private TicketClass ticketClass;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(nullable = false)
@@ -69,7 +69,7 @@ public class Coach extends BaseEntity {
         return "Coach{" +
                 "id=" + getId() +
                 ", name='" + name + '\'' +
-                ", seatClass=" + seatClass +
+                ", seatClass=" + ticketClass +
                 '}';
     }
 }

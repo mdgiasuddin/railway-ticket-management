@@ -1,6 +1,6 @@
 package com.example.railwayticket.model.entity;
 
-import com.example.railwayticket.model.enumeration.SeatClass;
+import com.example.railwayticket.model.enumeration.TicketClass;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
@@ -29,7 +29,7 @@ public class Fare extends BaseEntity {
 
     @Column(nullable = false, columnDefinition = "varchar(10)")
     @Enumerated(STRING)
-    private SeatClass seatClass;
+    private TicketClass ticketClass;
 
     @Column(nullable = false)
     private Double amount;
@@ -40,7 +40,7 @@ public class Fare extends BaseEntity {
                 "id=" + getId() +
                 ", fromStation=" + fromStation +
                 ", toStation=" + toStation +
-                ", seatClass=" + seatClass +
+                ", seatClass=" + ticketClass +
                 ", amount=" + amount +
                 '}';
     }

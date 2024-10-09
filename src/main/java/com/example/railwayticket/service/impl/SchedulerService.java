@@ -81,7 +81,7 @@ public class SchedulerService {
                     long fromStationId = seatStationMapping.get(i);
                     long toStationId = seatStationMapping.get(i + 1);
 
-                    log.info("Seat: {}, From station {}, to station {}, class {}", seat.getId(), fromStationId, toStationId, coach.getSeatClass());
+                    log.info("Seat: {}, From station {}, to station {}, class {}", seat.getId(), fromStationId, toStationId, coach.getTicketClass());
 
                     SeatForJourney seatForJourney = new SeatForJourney();
                     seatForJourney.setIdKey(MiscUtils.generateIdKey());
@@ -89,7 +89,7 @@ public class SchedulerService {
                     seatForJourney.setToStation(stationMap.get(toStationId).getStation());
                     seatForJourney.setSeat(seat);
                     seatForJourney.setTrainRoute(trainRoute);
-                    seatForJourney.setFare(fareMap.get(MiscUtils.generateFareKey(fromStationId, toStationId, coach.getSeatClass()))
+                    seatForJourney.setFare(fareMap.get(MiscUtils.generateFareKey(fromStationId, toStationId, coach.getTicketClass()))
                             .getAmount());
                     seatForJourney.setSeatStatus(AVAILABLE);
                     LocalDateTime journeyDateTime = LocalDateTime.of(journeyDate, trainRoute.getStartTime())
@@ -126,7 +126,7 @@ public class SchedulerService {
     private Map<String, Fare> buildFairMap(Collection<Fare> fares) {
         Map<String, Fare> fairMap = new HashMap<>();
         for (Fare fare : fares) {
-            fairMap.put(MiscUtils.generateFareKey(fare.getFromStation().getId(), fare.getToStation().getId(), fare.getSeatClass()), fare);
+            fairMap.put(MiscUtils.generateFareKey(fare.getFromStation().getId(), fare.getToStation().getId(), fare.getTicketClass()), fare);
         }
 
         return fairMap;

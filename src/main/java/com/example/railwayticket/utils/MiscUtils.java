@@ -1,6 +1,6 @@
 package com.example.railwayticket.utils;
 
-import com.example.railwayticket.model.enumeration.SeatClass;
+import com.example.railwayticket.model.enumeration.TicketClass;
 import lombok.NoArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -15,11 +15,11 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
 @NoArgsConstructor(access = PRIVATE)
 public class MiscUtils {
 
-    public static String generateFareKey(long fromStationId, long toStationId, SeatClass seatClass) {
+    public static String generateFareKey(long fromStationId, long toStationId, TicketClass ticketClass) {
         long firstStationId = Math.min(fromStationId, toStationId);
         long lastStationId = Math.max(fromStationId, toStationId);
 
-        return String.format("%d:%d:%s", firstStationId, lastStationId, seatClass.name());
+        return String.format("%d:%d:%s", firstStationId, lastStationId, ticketClass.name());
     }
 
     public static String generateIdKey() {

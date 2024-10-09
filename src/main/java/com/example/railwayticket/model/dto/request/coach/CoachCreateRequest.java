@@ -1,6 +1,6 @@
 package com.example.railwayticket.model.dto.request.coach;
 
-import com.example.railwayticket.model.enumeration.SeatClass;
+import com.example.railwayticket.model.enumeration.TicketClass;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -13,7 +13,7 @@ public record CoachCreateRequest(
         String name,
 
         @NotNull
-        SeatClass seatClass,
+        TicketClass ticketClass,
 
         @NotNull
         Long trainId,

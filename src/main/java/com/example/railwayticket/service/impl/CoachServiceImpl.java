@@ -34,7 +34,7 @@ public class CoachServiceImpl implements CoachService {
         Train train = trainService.getTrainById(request.trainId());
         Coach coach = new Coach();
         coach.setName(request.name());
-        coach.setSeatClass(request.seatClass());
+        coach.setTicketClass(request.ticketClass());
         coach.setTotalSeats(request.totalSeats());
         coach.setSeatOrientation(request.seatOrientation());
         coach.setTrain(train);

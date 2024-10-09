@@ -125,7 +125,7 @@ public class BookingServiceImpl implements BookingService {
                         }
                         coachResponse.getSeats().add(seatResponse);
                     }
-                    TicketClassResponse classResponse = new TicketClassResponse(coach.getSeatClass(), firstSeatForJourney.getFare());
+                    TicketClassResponse classResponse = new TicketClassResponse(coach.getTicketClass(), firstSeatForJourney.getFare());
                     List<TicketCoachResponse> defaultList = classResponseMap.getOrDefault(classResponse, new ArrayList<>());
                     defaultList.add(coachResponse);
                     classResponseMap.put(classResponse, defaultList);
