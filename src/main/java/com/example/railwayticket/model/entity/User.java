@@ -29,7 +29,7 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    private Integer id;
+    private long id;
 
     @Column(columnDefinition = "varchar(50)")
     private String name;
@@ -94,7 +94,7 @@ public class User implements UserDetails {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof User user)) return false;
-        return Objects.equals(id, user.id);
+        return id == user.id;
     }
 
     @Override

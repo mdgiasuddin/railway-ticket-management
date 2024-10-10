@@ -1,6 +1,6 @@
 package com.example.railwayticket.service.impl;
 
-import com.example.railwayticket.model.dto.TicketData;
+import com.example.railwayticket.model.entity.Ticket;
 import com.example.railwayticket.service.intface.TicketPrintService;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -25,7 +25,7 @@ import static com.itextpdf.text.Font.NORMAL;
 public class TicketPrintServiceImpl implements TicketPrintService {
 
     @Override
-    public Resource printTicket(TicketData ticketData) {
+    public Resource printTicket(Ticket ticket) {
         float margin = 25f;
 
         Document document = new Document(PageSize.A4, margin, margin, margin, margin);

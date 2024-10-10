@@ -2,7 +2,6 @@ package com.example.railwayticket.service.impl;
 
 import com.example.railwayticket.exception.ResourceNotFoundException;
 import com.example.railwayticket.exception.RuleViolationException;
-import com.example.railwayticket.model.dto.TicketData;
 import com.example.railwayticket.model.dto.request.booking.TicketBookingRequest;
 import com.example.railwayticket.model.dto.request.booking.TicketConfirmationRequest;
 import com.example.railwayticket.model.dto.response.ticketbooking.TicketClassResponse;
@@ -12,10 +11,12 @@ import com.example.railwayticket.model.dto.response.ticketbooking.TicketSeatResp
 import com.example.railwayticket.model.dto.response.ticketbooking.TicketTrainResponse;
 import com.example.railwayticket.model.entity.Coach;
 import com.example.railwayticket.model.entity.Seat;
-import com.example.railwayticket.model.entity.SeatForJourney;
+import com.example.railwayticket.model.entity.Ticket;
 import com.example.railwayticket.model.entity.Train;
+import com.example.railwayticket.model.entity.TrainJourney;
 import com.example.railwayticket.model.entity.User;
-import com.example.railwayticket.repository.SeatForJourneyRepository;
+import com.example.railwayticket.repository.TicketRepository;
+import com.example.railwayticket.repository.TrainJourneyRepository;
 import com.example.railwayticket.service.intface.BookingService;
 import com.example.railwayticket.service.intface.TicketPrintService;
 import com.example.railwayticket.utils.AppDateTimeUtils;
@@ -40,40 +41,42 @@ import java.util.Map;
 import static com.example.railwayticket.constant.ApplicationConstants.BOOKING_VALIDITY;
 import static com.example.railwayticket.model.enumeration.SeatStatus.AVAILABLE;
 import static com.example.railwayticket.model.enumeration.SeatStatus.BOOKED;
+import static com.example.railwayticket.model.enumeration.SeatStatus.SOLD;
 import static org.springframework.transaction.annotation.Isolation.REPEATABLE_READ;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
-    private final SeatForJourneyRepository seatForJourneyRepository;
+    private final TrainJourneyRepository trainJourneyRepository;
+    private final TicketRepository ticketRepository;
     private final TicketPrintService ticketPrintService;
 
     @Override
     public TicketSearchResponse searchTicket(long fromStationId, long toStationId, LocalDate journeyDate) {
-        List<SeatForJourney> seatForJourneys = seatForJourneyRepository.searchSeatForJourney(
+        List<TrainJourney> trainJourneys = trainJourneyRepository.searchSeatForJourney(
                 fromStationId, toStationId, journeyDate
         );
 
-        Map<Train, List<Map.Entry<Coach, List<SeatForJourney>>>> trainCoachMap = organizeSeats(seatForJourneys);
+        Map<Train, List<Map.Entry<Coach, List<TrainJourney>>>> trainCoachMap = organizeSeats(trainJourneys);
 
         return convertToResponse(trainCoachMap);
     }
 
-    private Map<Train, List<Map.Entry<Coach, List<SeatForJourney>>>> organizeSeats(List<SeatForJourney> seatForJourneys) {
-        Map<Coach, List<SeatForJourney>> coachSeatMap = new HashMap<>();
+    private Map<Train, List<Map.Entry<Coach, List<TrainJourney>>>> organizeSeats(List<TrainJourney> trainJourneys) {
+        Map<Coach, List<TrainJourney>> coachSeatMap = new HashMap<>();
 
-        for (SeatForJourney seatForJourney : seatForJourneys) {
-            Coach coach = seatForJourney.getSeat().getCoach();
-            List<SeatForJourney> defaultList = coachSeatMap.getOrDefault(coach, new ArrayList<>());
-            defaultList.add(seatForJourney);
+        for (TrainJourney trainJourney : trainJourneys) {
+            Coach coach = trainJourney.getSeat().getCoach();
+            List<TrainJourney> defaultList = coachSeatMap.getOrDefault(coach, new ArrayList<>());
+            defaultList.add(trainJourney);
             coachSeatMap.put(coach, defaultList);
         }
 
-        Map<Train, List<Map.Entry<Coach, List<SeatForJourney>>>> trainCoachMap = new HashMap<>();
-        for (Map.Entry<Coach, List<SeatForJourney>> entry : coachSeatMap.entrySet()) {
+        Map<Train, List<Map.Entry<Coach, List<TrainJourney>>>> trainCoachMap = new HashMap<>();
+        for (Map.Entry<Coach, List<TrainJourney>> entry : coachSeatMap.entrySet()) {
             Train train = entry.getKey().getTrain();
-            List<Map.Entry<Coach, List<SeatForJourney>>> defaultList = trainCoachMap.getOrDefault(train, new ArrayList<>());
+            List<Map.Entry<Coach, List<TrainJourney>>> defaultList = trainCoachMap.getOrDefault(train, new ArrayList<>());
             defaultList.add(entry);
             trainCoachMap.put(train, defaultList);
         }
@@ -81,28 +84,28 @@ public class BookingServiceImpl implements BookingService {
         return trainCoachMap;
     }
 
-    private TicketSearchResponse convertToResponse(Map<Train, List<Map.Entry<Coach, List<SeatForJourney>>>> trainCoachMap) {
+    private TicketSearchResponse convertToResponse(Map<Train, List<Map.Entry<Coach, List<TrainJourney>>>> trainCoachMap) {
         TicketSearchResponse ticketSearchResponse = new TicketSearchResponse();
-        for (Map.Entry<Train, List<Map.Entry<Coach, List<SeatForJourney>>>> trainEntry : trainCoachMap.entrySet()) {
+        for (Map.Entry<Train, List<Map.Entry<Coach, List<TrainJourney>>>> trainEntry : trainCoachMap.entrySet()) {
             Train train = trainEntry.getKey();
             TicketTrainResponse trainResponse = new TicketTrainResponse();
             trainResponse.setTrainName(train.getName());
 
             Map<TicketClassResponse, List<TicketCoachResponse>> classResponseMap = new HashMap<>();
 
-            for (Map.Entry<Coach, List<SeatForJourney>> coachEntry : trainEntry.getValue()) {
+            for (Map.Entry<Coach, List<TrainJourney>> coachEntry : trainEntry.getValue()) {
                 Coach coach = coachEntry.getKey();
-                List<SeatForJourney> seatForJourneys = coachEntry.getValue();
-                SeatForJourney firstSeatForJourney = seatForJourneys.getFirst();
+                List<TrainJourney> trainJourneys = coachEntry.getValue();
+                TrainJourney firstTrainJourney = trainJourneys.getFirst();
 
-                trainResponse.setRoute(firstSeatForJourney.getTrainRoute().getDescription());
+                trainResponse.setRoute(firstTrainJourney.getTrainRoute().getDescription());
                 trainResponse.setDepartureTime(LocalDateTime.of(
-                        firstSeatForJourney.getJourneyDate(),
-                        firstSeatForJourney.getJourneyTime()
+                        firstTrainJourney.getJourneyDate(),
+                        firstTrainJourney.getJourneyTime()
                 ));
-                trainResponse.setDestinationArrivalTime(firstSeatForJourney.getDestinationArrivalTime());
+                trainResponse.setDestinationArrivalTime(firstTrainJourney.getDestinationArrivalTime());
 
-                Map<Long, SeatForJourney> seatForJourneyMap = buildSeatForJourneyMap(seatForJourneys);
+                Map<Long, TrainJourney> seatForJourneyMap = buildSeatForJourneyMap(trainJourneys);
                 if (!seatForJourneyMap.isEmpty()) {
                     TicketCoachResponse coachResponse = new TicketCoachResponse();
                     coachResponse.setCoachName(coach.getName());
@@ -116,16 +119,16 @@ public class BookingServiceImpl implements BookingService {
 
                     for (Seat seat : seats) {
                         TicketSeatResponse seatResponse = new TicketSeatResponse();
-                        seatResponse.setSeatNumber(seat.getNumber());
+                        seatResponse.setSeatNumber(String.format("%s-%s", coach.getName(), seat.getNumber()));
                         if (seatForJourneyMap.containsKey(seat.getId())) {
-                            SeatForJourney seatForJourney = seatForJourneyMap.get(seat.getId());
-                            seatResponse.setId(seatForJourney.getId());
-                            seatResponse.setIdKey(seatForJourney.getIdKey());
+                            TrainJourney trainJourney = seatForJourneyMap.get(seat.getId());
+                            seatResponse.setId(trainJourney.getId());
+                            seatResponse.setIdKey(trainJourney.getIdKey());
                             seatResponse.setAvailable(true);
                         }
                         coachResponse.getSeats().add(seatResponse);
                     }
-                    TicketClassResponse classResponse = new TicketClassResponse(coach.getTicketClass(), firstSeatForJourney.getFare());
+                    TicketClassResponse classResponse = new TicketClassResponse(coach.getTicketClass(), firstTrainJourney.getFare());
                     List<TicketCoachResponse> defaultList = classResponseMap.getOrDefault(classResponse, new ArrayList<>());
                     defaultList.add(coachResponse);
                     classResponseMap.put(classResponse, defaultList);
@@ -158,12 +161,12 @@ public class BookingServiceImpl implements BookingService {
         return classResponses;
     }
 
-    private Map<Long, SeatForJourney> buildSeatForJourneyMap(List<SeatForJourney> seatForJourneys) {
-        Map<Long, SeatForJourney> seatForJourneyMap = new HashMap<>();
-        for (SeatForJourney seatForJourney : seatForJourneys) {
-            if (AVAILABLE.equals(seatForJourney.getSeatStatus()) || (BOOKED.equals(seatForJourney.getSeatStatus()) &&
-                    AppDateTimeUtils.nowInBD().minusMinutes(BOOKING_VALIDITY).isAfter(seatForJourney.getBookingTime())))
-                seatForJourneyMap.put(seatForJourney.getSeat().getId(), seatForJourney);
+    private Map<Long, TrainJourney> buildSeatForJourneyMap(List<TrainJourney> trainJourneys) {
+        Map<Long, TrainJourney> seatForJourneyMap = new HashMap<>();
+        for (TrainJourney trainJourney : trainJourneys) {
+            if (AVAILABLE.equals(trainJourney.getSeatStatus()) || (BOOKED.equals(trainJourney.getSeatStatus()) &&
+                    AppDateTimeUtils.nowInBD().minusMinutes(BOOKING_VALIDITY).isAfter(trainJourney.getBookingTime())))
+                seatForJourneyMap.put(trainJourney.getSeat().getId(), trainJourney);
         }
         return seatForJourneyMap;
     }
@@ -177,26 +180,28 @@ public class BookingServiceImpl implements BookingService {
                     return new RuleViolationException("LOGGED_IN_USER_NOT_FOUND", "User must be logged in to book a ticket");
                 });
 
-        SeatForJourney seatForJourney = seatForJourneyRepository.findById(request.id())
-                .filter(s -> AVAILABLE.equals(s.getSeatStatus()) &&
-                        s.getIdKey().equals(request.idKey()))
+        TrainJourney trainJourney = trainJourneyRepository.findById(request.id())
+                .filter(tj -> tj.getIdKey().equals(request.idKey()) &&
+                        (AVAILABLE.equals(tj.getSeatStatus()) || (BOOKED.equals(tj.getSeatStatus()) &&
+                                AppDateTimeUtils.nowInBD().minusMinutes(BOOKING_VALIDITY).isAfter(tj.getBookingTime()))))
                 .orElseThrow(() -> {
                     log.error("No available seat found with id: {}", request.id());
                     return new ResourceNotFoundException("AVAILABLE_SEAT_NOT_FOUND", "No ticket found with id: " + request.id());
                 });
 
         LocalDateTime currentTime = AppDateTimeUtils.nowInBD();
-        if (currentTime.isAfter(LocalDateTime.of(seatForJourney.getJourneyDate(), seatForJourney.getJourneyTime()))) {
+        if (currentTime.isAfter(LocalDateTime.of(trainJourney.getJourneyDate(), trainJourney.getJourneyTime()))) {
             throw new RuleViolationException("BOOKING_TIME_EXPIRED", "Ticket booking time already expired");
         }
 
-        seatForJourney.setSeatStatus(BOOKED);
-        seatForJourney.setBookedBy(currentUser);
-        seatForJourney.setBookingTime(currentTime);
+        trainJourney.setSeatStatus(BOOKED);
+        trainJourney.setBookedBy(currentUser);
+        trainJourney.setBookingTime(currentTime);
 
-        seatForJourneyRepository.save(seatForJourney);
+        trainJourneyRepository.save(trainJourney);
     }
 
+    @Transactional(isolation = REPEATABLE_READ)
     @Override
     public ResponseEntity<Resource> confirmAndPrintTicket(TicketConfirmationRequest request) {
         User currentUser = SecurityUtils.getCurrentUser()
@@ -205,20 +210,32 @@ public class BookingServiceImpl implements BookingService {
                     return new RuleViolationException("LOGGED_IN_USER_NOT_FOUND", "User must be logged in to confirm a ticket");
                 });
 
-        List<SeatForJourney> seatForJourneys = seatForJourneyRepository.findByIdIn(request.ids());
-        if (seatForJourneys.size() != request.ids().size()) {
+        List<TrainJourney> trainJourneys = trainJourneyRepository.findByIdIn(request.ids());
+        List<String> seats = new ArrayList<>();
+        if (trainJourneys.size() != request.ids().size()) {
             throw new ResourceNotFoundException("INVALID_TICKET_ID", "Some ids are not valid");
         }
-        for (SeatForJourney seatForJourney : seatForJourneys) {
-            if (!BOOKED.equals(seatForJourney.getSeatStatus()) || !currentUser.equals(seatForJourney.getBookedBy())) {
+        for (TrainJourney trainJourney : trainJourneys) {
+            if (!BOOKED.equals(trainJourney.getSeatStatus()) || !currentUser.equals(trainJourney.getBookedBy())) {
                 throw new RuleViolationException("TICKET_CONFIRMATION_DENIED", "Ticket can be confirmed only by booked user");
             }
-            if (AppDateTimeUtils.nowInBD().minusMinutes(BOOKING_VALIDITY).isAfter(seatForJourney.getBookingTime())) {
+            if (AppDateTimeUtils.nowInBD().minusMinutes(BOOKING_VALIDITY).isAfter(trainJourney.getBookingTime())) {
                 throw new RuleViolationException("CONFIRMATION_PERIOD_EXPIRED", "Ticket confirmation period expired");
             }
-        }
 
-        Resource resource = ticketPrintService.printTicket(new TicketData());
+            trainJourney.setSeatStatus(SOLD);
+            trainJourney.setSellingTime(AppDateTimeUtils.nowInBD());
+            Seat seat = trainJourney.getSeat();
+            seats.add(String.format("%s-%s", seat.getCoach().getName(), seat.getNumber()));
+        }
+        trainJourneyRepository.saveAll(trainJourneys);
+
+        Ticket ticket = new Ticket();
+        ticket.setIdKey(MiscUtils.generateIdKey());
+        ticket.setSeats(String.join(", ", seats));
+        ticket.setSeatIds(request.ids());
+
+        Resource resource = ticketPrintService.printTicket(ticketRepository.save(ticket));
         String filename = AppDateTimeUtils.nowInBD()
                 .format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".pdf";
         return MiscUtils.convertToFile(resource, filename);

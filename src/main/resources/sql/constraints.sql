@@ -4,7 +4,9 @@ alter table coach
 alter table seat
     add unique (coach_id, number);
 alter table fare
-    add unique (from_station_id, to_station_id, seat_class);
+    add unique (from_station_id, to_station_id, ticket_class);
+alter table train_route
+    add unique (train_id, route_type);
 alter table train_route_station
     add unique (station_id, train_route_id);
 alter table seat_for_journey

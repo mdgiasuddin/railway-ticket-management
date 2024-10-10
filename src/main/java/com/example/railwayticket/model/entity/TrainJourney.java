@@ -29,7 +29,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Table
 @Getter
 @Setter
-public class SeatForJourney {
+public class TrainJourney {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private long id;
@@ -64,6 +64,8 @@ public class SeatForJourney {
     private User bookedBy;
 
     private LocalDateTime bookingTime;
+
+    private LocalDateTime sellingTime;
 
     @Column(nullable = false)
     private LocalDate journeyDate;

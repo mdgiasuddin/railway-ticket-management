@@ -3,11 +3,11 @@ package com.example.railwayticket.service.impl;
 import com.example.railwayticket.model.entity.Coach;
 import com.example.railwayticket.model.entity.Fare;
 import com.example.railwayticket.model.entity.Seat;
-import com.example.railwayticket.model.entity.SeatForJourney;
+import com.example.railwayticket.model.entity.TrainJourney;
 import com.example.railwayticket.model.entity.TrainRoute;
 import com.example.railwayticket.model.entity.TrainRouteStation;
 import com.example.railwayticket.repository.FairRepository;
-import com.example.railwayticket.repository.SeatForJourneyRepository;
+import com.example.railwayticket.repository.TrainJourneyRepository;
 import com.example.railwayticket.repository.TrainRouteRepository;
 import com.example.railwayticket.utils.MiscUtils;
 import lombok.RequiredArgsConstructor;
@@ -38,8 +38,8 @@ public class SchedulerService {
 
     private final TrainRouteRepository trainRouteRepository;
     private final FairRepository fairRepository;
-    private final SeatForJourneyRepository seatForJourneyRepository;
-    private final LocalDate journeyDate = LocalDate.parse("2024-10-10");
+    private final TrainJourneyRepository trainJourneyRepository;
+    private final LocalDate journeyDate = LocalDate.parse("2024-10-11");
 
     @Transactional
 //    @Scheduled(initialDelay = 1000)
@@ -54,22 +54,22 @@ public class SchedulerService {
             trainRoutePage = trainRouteRepository.findTrainRoutesByIdIsNotNull(pageable);
 
             for (TrainRoute trainRoute : trainRoutePage) {
-                if (!trainRoute.getTrain().isActive() || journeyDate.getDayOfWeek().equals(trainRoute.getOffDay()))
-                    continue;
-                createSeatsForJourney(trainRoute);
+                if (trainRoute.getTrain().isActive() && !journeyDate.getDayOfWeek().equals(trainRoute.getOffDay())) {
+                    createTrainJourney(trainRoute);
+                }
             }
             page += 1;
         } while (trainRoutePage.hasNext());
     }
 
-    private void createSeatsForJourney(TrainRoute trainRoute) {
+    private void createTrainJourney(TrainRoute trainRoute) {
         Set<TrainRouteStation> trainRouteStations = trainRoute.getTrainRouteStations();
         Map<Long, TrainRouteStation> stationMap = buildStationMap(trainRouteStations);
         List<Long> stationIds = getStationIds(trainRouteStations);
         List<Fare> fares = fairRepository.getAllRouteFairs(stationIds);
         Map<String, Fare> fareMap = buildFairMap(fares);
 
-        List<SeatForJourney> seatForJourneys = new ArrayList<>();
+        List<TrainJourney> trainJourneys = new ArrayList<>();
         for (Coach coach : trainRoute.getTrain().getCoaches()) {
             if (!coach.isActive())
                 continue;
@@ -83,27 +83,27 @@ public class SchedulerService {
 
                     log.info("Seat: {}, From station {}, to station {}, class {}", seat.getId(), fromStationId, toStationId, coach.getTicketClass());
 
-                    SeatForJourney seatForJourney = new SeatForJourney();
-                    seatForJourney.setIdKey(MiscUtils.generateIdKey());
-                    seatForJourney.setFromStation(stationMap.get(fromStationId).getStation());
-                    seatForJourney.setToStation(stationMap.get(toStationId).getStation());
-                    seatForJourney.setSeat(seat);
-                    seatForJourney.setTrainRoute(trainRoute);
-                    seatForJourney.setFare(fareMap.get(MiscUtils.generateFareKey(fromStationId, toStationId, coach.getTicketClass()))
+                    TrainJourney trainJourney = new TrainJourney();
+                    trainJourney.setIdKey(MiscUtils.generateIdKey());
+                    trainJourney.setFromStation(stationMap.get(fromStationId).getStation());
+                    trainJourney.setToStation(stationMap.get(toStationId).getStation());
+                    trainJourney.setSeat(seat);
+                    trainJourney.setTrainRoute(trainRoute);
+                    trainJourney.setFare(fareMap.get(MiscUtils.generateFareKey(fromStationId, toStationId, coach.getTicketClass()))
                             .getAmount());
-                    seatForJourney.setSeatStatus(AVAILABLE);
+                    trainJourney.setSeatStatus(AVAILABLE);
                     LocalDateTime journeyDateTime = LocalDateTime.of(journeyDate, trainRoute.getStartTime())
                             .plusMinutes(stationMap.get(fromStationId).getTimeFromStartStation());
-                    seatForJourney.setJourneyDate(journeyDateTime.toLocalDate());
-                    seatForJourney.setJourneyTime(journeyDateTime.toLocalTime());
-                    seatForJourney.setDestinationArrivalTime(LocalDateTime.of(journeyDate, trainRoute.getStartTime())
+                    trainJourney.setJourneyDate(journeyDateTime.toLocalDate());
+                    trainJourney.setJourneyTime(journeyDateTime.toLocalTime());
+                    trainJourney.setDestinationArrivalTime(LocalDateTime.of(journeyDate, trainRoute.getStartTime())
                             .plusMinutes(stationMap.get(toStationId).getTimeFromStartStation()));
-                    seatForJourneys.add(seatForJourney);
+                    trainJourneys.add(trainJourney);
                 }
             }
         }
 
-        seatForJourneyRepository.saveAll(seatForJourneys);
+        trainJourneyRepository.saveAll(trainJourneys);
     }
 
     private Map<Long, TrainRouteStation> buildStationMap(Collection<TrainRouteStation> trainRouteStations) {
