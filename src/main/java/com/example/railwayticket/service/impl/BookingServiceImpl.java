@@ -141,6 +141,7 @@ public class BookingServiceImpl implements BookingService {
             ticketSearchResponse.getTrains().add(trainResponse);
         }
 
+        ticketSearchResponse.getTrains().sort(Comparator.comparing(TicketTrainResponse::getDepartureTime));
         return ticketSearchResponse;
     }
 

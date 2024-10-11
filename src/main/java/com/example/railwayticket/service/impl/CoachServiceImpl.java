@@ -7,6 +7,7 @@ import com.example.railwayticket.model.dto.request.coach.CoachUpdateRequest;
 import com.example.railwayticket.model.dto.response.CoachResponse;
 import com.example.railwayticket.model.entity.Coach;
 import com.example.railwayticket.model.entity.Train;
+import com.example.railwayticket.model.enumeration.TicketClass;
 import com.example.railwayticket.repository.CoachRepository;
 import com.example.railwayticket.service.intface.CoachService;
 import com.example.railwayticket.service.intface.TrainService;
@@ -41,16 +42,8 @@ public class CoachServiceImpl implements CoachService {
     public CoachResponse createNewCoach(CoachCreateRequest request) {
         Coach coach = new Coach();
 
-        validateSeatOrientation(request.totalSeats(), request.seatOrientation());
-        Train train = trainService.getTrainById(request.trainId());
-
-        coach.setName(request.name());
-        coach.setTicketClass(request.ticketClass());
-        coach.setTotalSeats(request.totalSeats());
-        coach.setSeatOrientation(request.seatOrientation());
-        coach.setTrain(train);
-
-        return new CoachResponse(coachRepository.save(coach));
+        return updateCoachInformation(coach, request.totalSeats(), request.seatOrientation(),
+                request.trainId(), request.name(), request.ticketClass());
     }
 
     @Override
@@ -65,19 +58,11 @@ public class CoachServiceImpl implements CoachService {
     public CoachResponse updateCoach(CoachUpdateRequest request) {
         Coach coach = getCoachById(request.id());
 
-        validateSeatOrientation(request.totalSeats(), request.seatOrientation());
-        Train train = trainService.getTrainById(request.trainId());
-
-        coach.setName(request.name());
-        coach.setTicketClass(request.ticketClass());
-        coach.setTotalSeats(request.totalSeats());
-        coach.setSeatOrientation(request.seatOrientation());
-        coach.setTrain(train);
-
-        return new CoachResponse(coachRepository.save(coach));
+        return updateCoachInformation(coach, request.totalSeats(), request.seatOrientation(),
+                request.trainId(), request.name(), request.ticketClass());
     }
 
-    private void validateSeatOrientation(int totalSeats, List<Long> seatOrientation) {
+    private CoachResponse updateCoachInformation(Coach coach, Integer totalSeats, List<Long> seatOrientation, Long trainId, String name, TicketClass ticketClass) {
         long sumOfSeats = seatOrientation
                 .stream()
                 .mapToLong(i -> i)
@@ -86,5 +71,15 @@ public class CoachServiceImpl implements CoachService {
         if (sumOfSeats != totalSeats) {
             throw new RuleViolationException("INVALID_SEAT_ORIENTATION", "Seat orientation doesn't match with total seats");
         }
+
+        Train train = trainService.getTrainById(trainId);
+        coach.setName(name);
+        coach.setTicketClass(ticketClass);
+        coach.setTotalSeats(totalSeats);
+        coach.setSeatOrientation(seatOrientation);
+        coach.setTrain(train);
+
+        return new CoachResponse(coachRepository.save(coach));
     }
+
 }

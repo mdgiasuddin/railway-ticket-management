@@ -11,8 +11,8 @@ import static lombok.AccessLevel.PRIVATE;
 @NoArgsConstructor(access = PRIVATE)
 public class AppDateTimeUtils {
     public static final String BD_TIME_ZONE = "Asia/Dhaka";
-    public static final String DATE_PATTERN = "yyyy-MM-dd";
-    public static final String DATE_TIME_PATTERN = "yyyy-MM-dd hh:mm a";
+    public static final String DATE_PATTERN = "dd MMM yyyy";
+    public static final String DATE_TIME_PATTERN = "dd MMM yyyy, hh:mm a";
 
     public static LocalDate todayInBD() {
         return LocalDate.now(ZoneId.of(BD_TIME_ZONE));
