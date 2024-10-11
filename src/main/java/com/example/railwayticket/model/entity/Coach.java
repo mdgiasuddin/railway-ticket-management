@@ -49,6 +49,9 @@ public class Coach extends BaseEntity {
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean active = false;
 
+    @Column(nullable = false, columnDefinition = "int default 0")
+    private int ordering = 0;
+
     @OneToMany(mappedBy = "coach", fetch = LAZY)
     private Set<Seat> seats = new HashSet<>();
 

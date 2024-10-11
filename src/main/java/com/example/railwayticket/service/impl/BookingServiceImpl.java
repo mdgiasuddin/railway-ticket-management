@@ -81,7 +81,6 @@ public class BookingServiceImpl implements BookingService {
             defaultList.add(entry);
             trainCoachMap.put(train, defaultList);
         }
-
         return trainCoachMap;
     }
 
@@ -94,6 +93,7 @@ public class BookingServiceImpl implements BookingService {
 
             Map<TicketClassResponse, List<TicketCoachResponse>> classResponseMap = new HashMap<>();
 
+            trainEntry.getValue().sort(Comparator.comparingInt(a -> a.getKey().getOrdering()));
             for (Map.Entry<Coach, List<TrainJourney>> coachEntry : trainEntry.getValue()) {
                 Coach coach = coachEntry.getKey();
                 List<TrainJourney> trainJourneys = coachEntry.getValue();
