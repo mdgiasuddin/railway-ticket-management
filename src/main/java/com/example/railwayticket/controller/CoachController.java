@@ -1,6 +1,7 @@
 package com.example.railwayticket.controller;
 
 import com.example.railwayticket.model.dto.request.coach.CoachCreateRequest;
+import com.example.railwayticket.model.dto.request.coach.CoachUpdateRequest;
 import com.example.railwayticket.model.dto.response.CoachResponse;
 import com.example.railwayticket.service.intface.CoachService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,5 +37,12 @@ public class CoachController {
     @GetMapping("/train-id/{trainId}")
     public List<CoachResponse> getCoachByTrainId(@PathVariable int trainId) {
         return coachService.getCoachByTrainId(trainId);
+    }
+
+    @Operation(summary = "Update Coach information")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PutMapping
+    public CoachResponse updateCoach(@RequestBody @Valid CoachUpdateRequest request) {
+        return coachService.updateCoach(request);
     }
 }

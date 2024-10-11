@@ -5,7 +5,6 @@ import com.example.railwayticket.model.dto.request.train.TrainStatusUpdateReques
 import com.example.railwayticket.model.dto.request.train.TrainUpdateRequest;
 import com.example.railwayticket.model.dto.response.TrainResponse;
 import com.example.railwayticket.model.entity.Train;
-import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -15,9 +14,9 @@ public interface TrainService {
 
     List<TrainResponse> getAllTrains();
 
-    TrainResponse createTrain(@Valid TrainCreateRequest request);
+    TrainResponse createTrain(TrainCreateRequest request);
 
-    TrainResponse updateTrain(@Valid TrainUpdateRequest request);
+    TrainResponse updateTrain(TrainUpdateRequest request);
 
-    TrainResponse updateTrainStatus(@Valid TrainStatusUpdateRequest request);
+    TrainResponse updateTrainStatus(TrainStatusUpdateRequest request);
 }

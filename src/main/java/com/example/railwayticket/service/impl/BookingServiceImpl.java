@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.example.railwayticket.constant.ApplicationConstants.BOOKING_VALIDITY;
+import static com.example.railwayticket.constant.ApplicationConstants.SERVICE_CHARGE_PER_SEAT;
 import static com.example.railwayticket.model.enumeration.SeatStatus.AVAILABLE;
 import static com.example.railwayticket.model.enumeration.SeatStatus.BOOKED;
 import static com.example.railwayticket.model.enumeration.SeatStatus.SOLD;
@@ -212,9 +213,13 @@ public class BookingServiceImpl implements BookingService {
 
         List<TrainJourney> trainJourneys = trainJourneyRepository.findByIdIn(request.ids());
         List<String> seats = new ArrayList<>();
+        double fare = 0;
+        double serviceCharge = 0;
         if (trainJourneys.size() != request.ids().size()) {
             throw new ResourceNotFoundException("INVALID_TICKET_ID", "Some ids are not valid");
         }
+
+        TrainJourney firstTrainJourney = trainJourneys.getFirst();
         for (TrainJourney trainJourney : trainJourneys) {
             if (!BOOKED.equals(trainJourney.getSeatStatus()) || !currentUser.equals(trainJourney.getBookedBy())) {
                 throw new RuleViolationException("TICKET_CONFIRMATION_DENIED", "Ticket can be confirmed only by booked user");
@@ -227,13 +232,22 @@ public class BookingServiceImpl implements BookingService {
             trainJourney.setSellingTime(AppDateTimeUtils.nowInBD());
             Seat seat = trainJourney.getSeat();
             seats.add(String.format("%s-%s", seat.getCoach().getName(), seat.getNumber()));
+            fare += trainJourney.getFare();
+            serviceCharge += SERVICE_CHARGE_PER_SEAT;
         }
         trainJourneyRepository.saveAll(trainJourneys);
 
         Ticket ticket = new Ticket();
         ticket.setIdKey(MiscUtils.generateIdKey());
         ticket.setSeats(String.join(", ", seats));
-        ticket.setSeatIds(request.ids());
+        ticket.setJourneyIds(request.ids());
+        ticket.setFromStation(firstTrainJourney.getFromStation().getName());
+        ticket.setToStation(firstTrainJourney.getToStation().getName());
+        ticket.setJourneyDate(LocalDateTime.of(firstTrainJourney.getJourneyDate(), firstTrainJourney.getJourneyTime()));
+        ticket.setFare(fare);
+        ticket.setServiceCharge(serviceCharge);
+        ticket.setPassengerName(currentUser.getName());
+        ticket.setPassengerNid(currentUser.getNid());
 
         Resource resource = ticketPrintService.printTicket(ticketRepository.save(ticket));
         String filename = AppDateTimeUtils.nowInBD()

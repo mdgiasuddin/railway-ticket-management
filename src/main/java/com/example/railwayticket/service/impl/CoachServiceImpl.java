@@ -1,7 +1,9 @@
 package com.example.railwayticket.service.impl;
 
+import com.example.railwayticket.exception.ResourceNotFoundException;
 import com.example.railwayticket.exception.RuleViolationException;
 import com.example.railwayticket.model.dto.request.coach.CoachCreateRequest;
+import com.example.railwayticket.model.dto.request.coach.CoachUpdateRequest;
 import com.example.railwayticket.model.dto.response.CoachResponse;
 import com.example.railwayticket.model.entity.Coach;
 import com.example.railwayticket.model.entity.Train;
@@ -9,10 +11,14 @@ import com.example.railwayticket.repository.CoachRepository;
 import com.example.railwayticket.service.intface.CoachService;
 import com.example.railwayticket.service.intface.TrainService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.example.railwayticket.constant.ExceptionCode.COACH_NOT_FOUND;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CoachServiceImpl implements CoachService {
@@ -21,18 +27,23 @@ public class CoachServiceImpl implements CoachService {
     private final TrainService trainService;
 
     @Override
+    public Coach getCoachById(long id) {
+        return coachRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error("No coach found with id: {}", id);
+                    return new ResourceNotFoundException(
+                            COACH_NOT_FOUND,
+                            "No coach found with id: " + id);
+                });
+    }
+
+    @Override
     public CoachResponse createNewCoach(CoachCreateRequest request) {
-        long sumOfSeats = request.seatOrientation()
-                .stream()
-                .mapToLong(i -> i)
-                .sum();
-
-        if (sumOfSeats != request.totalSeats()) {
-            throw new RuleViolationException("INVALID_SEAT_ORIENTATION", "Seat orientation doesn't match with total seats");
-        }
-
-        Train train = trainService.getTrainById(request.trainId());
         Coach coach = new Coach();
+
+        validateSeatOrientation(request.totalSeats(), request.seatOrientation());
+        Train train = trainService.getTrainById(request.trainId());
+
         coach.setName(request.name());
         coach.setTicketClass(request.ticketClass());
         coach.setTotalSeats(request.totalSeats());
@@ -48,5 +59,32 @@ public class CoachServiceImpl implements CoachService {
                 .stream()
                 .map(CoachResponse::new)
                 .toList();
+    }
+
+    @Override
+    public CoachResponse updateCoach(CoachUpdateRequest request) {
+        Coach coach = getCoachById(request.id());
+
+        validateSeatOrientation(request.totalSeats(), request.seatOrientation());
+        Train train = trainService.getTrainById(request.trainId());
+
+        coach.setName(request.name());
+        coach.setTicketClass(request.ticketClass());
+        coach.setTotalSeats(request.totalSeats());
+        coach.setSeatOrientation(request.seatOrientation());
+        coach.setTrain(train);
+
+        return new CoachResponse(coachRepository.save(coach));
+    }
+
+    private void validateSeatOrientation(int totalSeats, List<Long> seatOrientation) {
+        long sumOfSeats = seatOrientation
+                .stream()
+                .mapToLong(i -> i)
+                .sum();
+
+        if (sumOfSeats != totalSeats) {
+            throw new RuleViolationException("INVALID_SEAT_ORIENTATION", "Seat orientation doesn't match with total seats");
+        }
     }
 }

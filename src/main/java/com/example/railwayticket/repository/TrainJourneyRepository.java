@@ -19,6 +19,6 @@ public interface TrainJourneyRepository extends JpaRepository<TrainJourney, Long
             long fromStationId, long toStationId, LocalDate journeyDate
     );
 
-    @EntityGraph(attributePaths = {"bookedBy", "seat.coach"})
+    @EntityGraph(attributePaths = {"bookedBy", "fromStation", "toStation", "seat.coach"})
     List<TrainJourney> findByIdIn(List<Long> ids);
 }
