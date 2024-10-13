@@ -28,8 +28,8 @@ import static com.example.railwayticket.utils.AppDateTimeUtils.DATE_PATTERN;
 public class BookingController {
     private final BookingService bookingService;
 
-    @PreAuthorize("hasAnyRole('USER')")
     @Operation(summary = "Search for available ticket between the stations on the searched date")
+    @PreAuthorize("hasAnyRole('USER')")
     @GetMapping("/search-ticket")
     public TicketSearchResponse searchTicket(
             @RequestParam long fromStationId,
@@ -39,15 +39,15 @@ public class BookingController {
         return bookingService.searchTicket(fromStationId, toStationId, date);
     }
 
-    @PreAuthorize("hasAnyRole('USER')")
     @Operation(summary = "Book a ticket")
+    @PreAuthorize("hasAnyRole('USER')")
     @PostMapping("/book-ticket")
     public void bookTicket(@RequestBody @Valid TicketBookingRequest request) {
         bookingService.bookTicket(request);
     }
 
-    @PreAuthorize("hasAnyRole('USER')")
     @Operation(summary = "Confirm booked ticket")
+    @PreAuthorize("hasAnyRole('USER')")
     @PostMapping("/confirm-ticket")
     public ResponseEntity<Resource> confirmAndPrintTicket(@RequestBody @Valid TicketConfirmationRequest request) {
         return bookingService.confirmAndPrintTicket(request);

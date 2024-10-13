@@ -9,8 +9,10 @@ alter table train_route
     add unique (train_id, route_type);
 alter table train_route_station
     add unique (station_id, train_route_id);
-alter table seat_for_journey
+alter table train_journey
     add unique (journey_date, from_station_id, to_station_id, seat_id);
+alter table route
+    add unique (start_station_id, end_station_id);
 
 -- index
 create index idx_seat_coach_id on seat (coach_id);

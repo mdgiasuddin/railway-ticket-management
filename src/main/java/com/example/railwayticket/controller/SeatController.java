@@ -7,6 +7,7 @@ import com.example.railwayticket.service.intface.SeatService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +25,8 @@ public class SeatController {
 
     private final SeatService seatService;
 
+    @Operation(summary = "Get all Seats of a Coach")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/coach-id/{coachId}")
     public List<SeatResponse> getSeatsByCoachId(@PathVariable long coachId) {
         return seatService.getSeatsByCoachId(coachId);
