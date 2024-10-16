@@ -10,6 +10,8 @@ import lombok.Getter;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 
+import static com.example.railwayticket.model.enumeration.RouteType.UP;
+
 @Getter
 public class TrainRouteResponse {
     private final long id;
@@ -26,7 +28,11 @@ public class TrainRouteResponse {
     public TrainRouteResponse(TrainRoute trainRoute, Train train, Route route) {
         this.id = trainRoute.getId();
         this.train = new TrainResponse(train);
-        this.route = new RouteResponse(route, route.getStartStation(), route.getEndStation());
+        this.route = new RouteResponse(
+                route,
+                UP.equals(trainRoute.getRouteType()) ? route.getStartStation() : route.getEndStation(),
+                UP.equals(trainRoute.getRouteType()) ? route.getEndStation() : route.getStartStation()
+        );
         this.offDay = trainRoute.getOffDay();
         this.routeType = trainRoute.getRouteType();
         this.startTime = trainRoute.getStartTime();

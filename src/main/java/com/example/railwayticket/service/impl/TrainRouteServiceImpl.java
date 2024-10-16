@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.util.Comparator;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -26,6 +28,18 @@ public class TrainRouteServiceImpl implements TrainRouteService {
     private final TrainRouteRepository trainRouteRepository;
     private final TrainService trainService;
     private final RouteService routeService;
+
+    @Override
+    public List<TrainRouteResponse> getAllTrainRoutes() {
+        return trainRouteRepository.findAllByIdIsNotNull()
+                .stream()
+                .map(tr -> new TrainRouteResponse(tr, tr.getTrain(), tr.getRoute()))
+                .sorted(
+                        Comparator.comparing((TrainRouteResponse tr) -> tr.getRoute().getStartStation().getName())
+                                .thenComparing(TrainRouteResponse::getStartTime)
+                )
+                .toList();
+    }
 
     @Override
     public TrainRouteResponse createTrainRoute(TrainRouteCreateRequest request) {
