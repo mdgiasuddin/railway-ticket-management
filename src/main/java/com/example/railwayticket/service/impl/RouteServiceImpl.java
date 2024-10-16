@@ -22,6 +22,18 @@ public class RouteServiceImpl implements RouteService {
     private final StationService stationService;
 
     @Override
+    public Route getRouteById(Long id) {
+        return routeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("ROUTE_NOT_FOUND", String.format("No route found with id %s", id)));
+    }
+
+    @Override
+    public Route getRouteByIdWithStations(Long id) {
+        return routeRepository.findRouteWithStationsById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("ROUTE_NOT_FOUND", String.format("No route found with id %s", id)));
+    }
+
+    @Override
     public RouteResponse createNewRoute(RouteCreateRequest request) {
         Route route = new Route();
 
@@ -47,10 +59,5 @@ public class RouteServiceImpl implements RouteService {
         route.setEndStation(endtStation);
 
         return new RouteResponse(routeRepository.save(route), startStation, endtStation);
-    }
-
-    private Route getRouteById(Long id) {
-        return routeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("ROUTE_NOT_FOUND", String.format("No route found with id %s", id)));
     }
 }

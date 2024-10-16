@@ -46,9 +46,6 @@ public class TrainRoute extends BaseEntity {
     @Column(nullable = false)
     private LocalTime endTime;
 
-    @Column(nullable = false, columnDefinition = "int default 0")
-    private int dayFromStartStation = 0;
-
     @Column(nullable = false)
     private String description;
 
