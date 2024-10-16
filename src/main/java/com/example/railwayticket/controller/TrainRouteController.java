@@ -3,12 +3,14 @@ package com.example.railwayticket.controller;
 import com.example.railwayticket.model.dto.request.route.TrainRouteCreateRequest;
 import com.example.railwayticket.model.dto.request.route.TrainRouteUpdateRequest;
 import com.example.railwayticket.model.dto.response.TrainRouteResponse;
+import com.example.railwayticket.model.dto.response.TrainRouteStationResponse;
 import com.example.railwayticket.service.intface.TrainRouteService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,5 +45,12 @@ public class TrainRouteController {
     @PutMapping
     public TrainRouteResponse updateTrainRoute(@RequestBody @Valid TrainRouteUpdateRequest request) {
         return trainRouteService.updateTrainRoute(request);
+    }
+
+    @Operation(summary = "Get all stoppage Stations of a Train-Route")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @GetMapping("/stations/{trainRouteId}")
+    public List<TrainRouteStationResponse> getStationsOfRoute(@PathVariable long trainRouteId) {
+        return trainRouteService.getStationsOfRoute(trainRouteId);
     }
 }

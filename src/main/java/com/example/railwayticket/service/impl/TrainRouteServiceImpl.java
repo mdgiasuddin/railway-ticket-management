@@ -4,11 +4,13 @@ import com.example.railwayticket.exception.ResourceNotFoundException;
 import com.example.railwayticket.model.dto.request.route.TrainRouteCreateRequest;
 import com.example.railwayticket.model.dto.request.route.TrainRouteUpdateRequest;
 import com.example.railwayticket.model.dto.response.TrainRouteResponse;
+import com.example.railwayticket.model.dto.response.TrainRouteStationResponse;
 import com.example.railwayticket.model.entity.Route;
 import com.example.railwayticket.model.entity.Train;
 import com.example.railwayticket.model.entity.TrainRoute;
 import com.example.railwayticket.model.enumeration.RouteType;
 import com.example.railwayticket.repository.TrainRouteRepository;
+import com.example.railwayticket.repository.TrainRouteStationRepository;
 import com.example.railwayticket.service.intface.RouteService;
 import com.example.railwayticket.service.intface.TrainRouteService;
 import com.example.railwayticket.service.intface.TrainService;
@@ -26,6 +28,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TrainRouteServiceImpl implements TrainRouteService {
     private final TrainRouteRepository trainRouteRepository;
+    private final TrainRouteStationRepository trainRouteStationRepository;
     private final TrainService trainService;
     private final RouteService routeService;
 
@@ -35,7 +38,7 @@ public class TrainRouteServiceImpl implements TrainRouteService {
                 .stream()
                 .map(tr -> new TrainRouteResponse(tr, tr.getTrain(), tr.getRoute()))
                 .sorted(
-                        Comparator.comparing((TrainRouteResponse tr) -> tr.getRoute().getStartStation().getName())
+                        Comparator.comparing(TrainRouteResponse::getRouteType)
                                 .thenComparing(TrainRouteResponse::getStartTime)
                 )
                 .toList();
@@ -73,5 +76,13 @@ public class TrainRouteServiceImpl implements TrainRouteService {
         trainRoute.setDescription(description);
 
         return new TrainRouteResponse(trainRouteRepository.save(trainRoute), train, route);
+    }
+
+    @Override
+    public List<TrainRouteStationResponse> getStationsOfRoute(long trainRouteId) {
+        return trainRouteStationRepository.getStationsOfTrainRoute(trainRouteId)
+                .stream()
+                .map(TrainRouteStationResponse::new)
+                .toList();
     }
 }

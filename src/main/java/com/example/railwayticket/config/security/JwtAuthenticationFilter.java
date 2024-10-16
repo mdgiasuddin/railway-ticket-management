@@ -18,7 +18,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 import static com.example.railwayticket.constant.ApplicationConstants.TOKEN_TYPE;
-import static com.example.railwayticket.constant.ExceptionConstant.USER_NOT_FOUND;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Component
@@ -44,7 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String accessToken = authHeader.substring(TOKEN_TYPE.length());
         String username = jwtService.extractUsername(accessToken);
         User user = userRepository.findUserByUsername(username)
-            .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND.getMessage()));
+                .orElseThrow(() -> new UsernameNotFoundException("No user found!"));
 
         if (jwtService.isTokenValid(accessToken)) {
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
