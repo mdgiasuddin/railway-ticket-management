@@ -39,7 +39,7 @@ public class AppSecurityConfiguration {
     @Bean
     public UserDetailsService userDetailsService(UserRepository userRepository) {
         return username -> userRepository.findUserByUsername(username)
-            .orElseThrow(() -> new UsernameNotFoundException("User not found..."));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found..."));
     }
 
     @Bean
@@ -49,8 +49,8 @@ public class AppSecurityConfiguration {
 
     @Bean
     public AuthenticationProvider authenticationProvider(
-        UserDetailsService userDetailsService,
-        PasswordEncoder passwordEncoder
+            UserDetailsService userDetailsService,
+            PasswordEncoder passwordEncoder
     ) {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
         authenticationProvider.setUserDetailsService(userDetailsService);
@@ -61,45 +61,45 @@ public class AppSecurityConfiguration {
 
     @Bean
     public AuthenticationManager authenticationManager(
-        AuthenticationConfiguration configuration
+            AuthenticationConfiguration configuration
     ) throws Exception {
         return configuration.getAuthenticationManager();
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(
-        HttpSecurity http,
-        AuthenticationProvider authenticationProvider,
-        JwtAuthenticationFilter authenticationFilter
+            HttpSecurity http,
+            AuthenticationProvider authenticationProvider,
+            JwtAuthenticationFilter authenticationFilter
     ) throws Exception {
         return http
-            .csrf(AbstractHttpConfigurer::disable)
-            .cors(cors -> corsConfigurationSource())
-            .authorizeHttpRequests(
-                auth -> auth.requestMatchers(
-                        "/v2/api-docs",
-                        "/v3/api-docs",
-                        "/v3/api-docs/**",
-                        "/swagger-resources",
-                        "/swagger-resources/**",
-                        "/configuration/ui",
-                        "/configuration/security",
-                        "/swagger-ui/**",
-                        "/webjars/**",
-                        "/swagger-ui.html",
-                                "/api/v1/auth/login",
-                                "/api/v1/auth/register"
-                    )
-                    .permitAll()
-                    .anyRequest()
-                    .authenticated()
-            )
-            .sessionManagement(
-                session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
-            .authenticationProvider(authenticationProvider)
-            .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
-            .build();
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> corsConfigurationSource())
+                .authorizeHttpRequests(
+                        auth -> auth.requestMatchers(
+                                        "/v2/api-docs",
+                                        "/v3/api-docs",
+                                        "/v3/api-docs/**",
+                                        "/swagger-resources",
+                                        "/swagger-resources/**",
+                                        "/configuration/ui",
+                                        "/configuration/security",
+                                        "/swagger-ui/**",
+                                        "/webjars/**",
+                                        "/swagger-ui.html",
+                                        "/api/auth/login",
+                                        "/api/auth/register"
+                                )
+                                .permitAll()
+                                .anyRequest()
+                                .authenticated()
+                )
+                .sessionManagement(
+                        session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .authenticationProvider(authenticationProvider)
+                .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
 
     }
 

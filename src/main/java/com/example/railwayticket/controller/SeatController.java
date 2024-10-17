@@ -33,12 +33,14 @@ public class SeatController {
     }
 
     @Operation(summary = "Create a new Seat entity in DB")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping
     public SeatResponse createNewSeat(@RequestBody @Valid SeatCreateRequest request) {
         return seatService.createNewSeat(request);
     }
 
     @Operation(summary = "Update Seat information")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @PutMapping
     public SeatResponse updateSeat(@RequestBody @Valid SeatUpdateRequest request) {
         return seatService.updateSeat(request);

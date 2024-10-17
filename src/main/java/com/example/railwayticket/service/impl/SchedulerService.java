@@ -6,15 +6,17 @@ import com.example.railwayticket.model.entity.Seat;
 import com.example.railwayticket.model.entity.TrainJourney;
 import com.example.railwayticket.model.entity.TrainRoute;
 import com.example.railwayticket.model.entity.TrainRouteStation;
-import com.example.railwayticket.repository.FairRepository;
+import com.example.railwayticket.repository.FareRepository;
 import com.example.railwayticket.repository.TrainJourneyRepository;
 import com.example.railwayticket.repository.TrainRouteRepository;
+import com.example.railwayticket.utils.AppDateTimeUtils;
 import com.example.railwayticket.utils.MiscUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +31,7 @@ import java.util.Set;
 
 import static com.example.railwayticket.model.enumeration.RouteType.UP;
 import static com.example.railwayticket.model.enumeration.SeatStatus.AVAILABLE;
+import static com.example.railwayticket.utils.AppDateTimeUtils.BD_TIME_ZONE;
 
 @Service
 @RequiredArgsConstructor
@@ -37,12 +40,12 @@ import static com.example.railwayticket.model.enumeration.SeatStatus.AVAILABLE;
 public class SchedulerService {
 
     private final TrainRouteRepository trainRouteRepository;
-    private final FairRepository fairRepository;
+    private final FareRepository fareRepository;
     private final TrainJourneyRepository trainJourneyRepository;
-    private final LocalDate journeyDate = LocalDate.parse("2024-10-11");
+    private final LocalDate journeyDate = AppDateTimeUtils.todayInBD().plusDays(1);
 
     @Transactional
-//    @Scheduled(initialDelay = 1000)
+    @Scheduled(cron = "0 22 22 * * ?", zone = BD_TIME_ZONE)
     public void scheduleTrainJourney() {
         log.info("Scheduler started at: {}", LocalDateTime.now());
         int page = 0;
@@ -66,7 +69,7 @@ public class SchedulerService {
         Set<TrainRouteStation> trainRouteStations = trainRoute.getTrainRouteStations();
         Map<Long, TrainRouteStation> stationMap = buildStationMap(trainRouteStations);
         List<Long> stationIds = getStationIds(trainRouteStations);
-        List<Fare> fares = fairRepository.getAllRouteFairs(stationIds);
+        List<Fare> fares = fareRepository.getAllRouteFairs(stationIds);
         Map<String, Fare> fareMap = buildFairMap(fares);
 
         List<TrainJourney> trainJourneys = new ArrayList<>();

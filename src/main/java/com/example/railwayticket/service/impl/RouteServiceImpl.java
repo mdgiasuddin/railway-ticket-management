@@ -59,13 +59,12 @@ public class RouteServiceImpl implements RouteService {
 
     private RouteResponse fillRouteInformation(Route route, Long startStationId, Long endStationId, boolean isUpdate) {
         if (startStationId.equals(endStationId)) {
-            throw new RuleViolationException("SAME_START_AND_END_STATION", "Start station & End station must be different");
+            throw new RuleViolationException("SAME_START_AND_END_STATION", "Start station & End station must be different to create a Route");
         }
 
-        if (!isUpdate || !generateStationIdsPair(startStationId, endStationId).equals(generateStationIdsPair(route.getStartStation().getId(), route.getEndStation().getId()))) {
-            if (routeRepository.getRouteByStationIds(startStationId, endStationId).isPresent()) {
-                throw new RuleViolationException("ROUTE_ALREADY_EXISTS", "Route already exist");
-            }
+        if ((!isUpdate || !generateStationIdsPair(startStationId, endStationId).equals(generateStationIdsPair(route.getStartStation().getId(), route.getEndStation().getId())))
+                && routeRepository.getRouteByStationIds(startStationId, endStationId).isPresent()) {
+            throw new RuleViolationException("ROUTE_ALREADY_EXISTS", "Route already exist");
         }
 
         Station startStation = stationService.getStationById(startStationId);
