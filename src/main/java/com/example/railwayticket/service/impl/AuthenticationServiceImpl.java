@@ -1,8 +1,10 @@
 package com.example.railwayticket.service.impl;
 
-import com.example.railwayticket.config.security.JwtService;
-import com.example.railwayticket.model.dto.request.AuthenticationRequest;
+import com.example.railwayticket.configuration.security.JwtService;
+import com.example.railwayticket.model.dto.request.authentication.AuthenticationRequest;
+import com.example.railwayticket.model.dto.request.authentication.UserRegistrationRequest;
 import com.example.railwayticket.model.dto.response.AuthenticationResponse;
+import com.example.railwayticket.model.dto.response.UserResponse;
 import com.example.railwayticket.model.entity.User;
 import com.example.railwayticket.service.intface.AuthenticationService;
 import lombok.RequiredArgsConstructor;
@@ -29,5 +31,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         User user = (User) authentication.getPrincipal();
 
         return new AuthenticationResponse(jwtService.generateAccessToken(user));
+    }
+
+    @Override
+    public UserResponse register(UserRegistrationRequest request) {
+        return null;
     }
 }

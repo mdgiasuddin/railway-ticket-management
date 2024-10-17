@@ -1,4 +1,4 @@
-package com.example.railwayticket.config.swagger;
+package com.example.railwayticket.configuration.swagger;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

@@ -1,4 +1,4 @@
-package com.example.railwayticket.model.dto.request;
+package com.example.railwayticket.model.dto.request.authentication;
 
 import jakarta.validation.constraints.NotBlank;
 

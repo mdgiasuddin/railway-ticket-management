@@ -1,4 +1,4 @@
-package com.example.railwayticket.config.security;
+package com.example.railwayticket.configuration.security;
 
 import com.example.railwayticket.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
@@ -87,7 +87,8 @@ public class AppSecurityConfiguration {
                         "/swagger-ui/**",
                         "/webjars/**",
                         "/swagger-ui.html",
-                        "/api/v1/auth/**"
+                                "/api/v1/auth/login",
+                                "/api/v1/auth/register"
                     )
                     .permitAll()
                     .anyRequest()

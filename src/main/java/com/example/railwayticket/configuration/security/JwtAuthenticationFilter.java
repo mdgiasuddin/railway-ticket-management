@@ -1,4 +1,4 @@
-package com.example.railwayticket.config.security;
+package com.example.railwayticket.configuration.security;
 
 import com.example.railwayticket.model.entity.User;
 import com.example.railwayticket.repository.UserRepository;

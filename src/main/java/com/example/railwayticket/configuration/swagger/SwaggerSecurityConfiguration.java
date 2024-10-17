@@ -1,4 +1,4 @@
-package com.example.railwayticket.config.swagger;
+package com.example.railwayticket.configuration.swagger;
 
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
