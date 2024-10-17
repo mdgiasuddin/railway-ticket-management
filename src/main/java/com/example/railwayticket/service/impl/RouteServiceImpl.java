@@ -81,6 +81,6 @@ public class RouteServiceImpl implements RouteService {
         long max = Math.max(stationId1, stationId2);
         long min = Math.min(stationId1, stationId2);
 
-        return String.format("%d,%d", min, max);
+        return String.format("%d:%d", min, max);
     }
 }

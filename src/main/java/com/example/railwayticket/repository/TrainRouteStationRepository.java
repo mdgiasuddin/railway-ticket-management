@@ -7,6 +7,9 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface TrainRouteStationRepository extends JpaRepository<TrainRouteStation, Long> {
-    @Query("select trs from TrainRouteStation trs inner join trs.trainRoute tr where tr.id = :trainRouteId order by trs.timeFromStartStation")
+    @Query("""
+            select trs from TrainRouteStation trs inner join trs.trainRoute tr inner join fetch trs.station s
+            where tr.id = :trainRouteId order by trs.timeFromStartStation
+            """)
     List<TrainRouteStation> getStationsOfTrainRoute(long trainRouteId);
 }

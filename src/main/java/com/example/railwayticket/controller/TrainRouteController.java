@@ -1,6 +1,8 @@
 package com.example.railwayticket.controller;
 
 import com.example.railwayticket.model.dto.request.route.TrainRouteCreateRequest;
+import com.example.railwayticket.model.dto.request.route.TrainRouteStationCreateRequest;
+import com.example.railwayticket.model.dto.request.route.TrainRouteStationUpdateRequest;
 import com.example.railwayticket.model.dto.request.route.TrainRouteUpdateRequest;
 import com.example.railwayticket.model.dto.response.TrainRouteResponse;
 import com.example.railwayticket.model.dto.response.TrainRouteStationResponse;
@@ -52,5 +54,19 @@ public class TrainRouteController {
     @GetMapping("/stations/{trainRouteId}")
     public List<TrainRouteStationResponse> getStationsOfRoute(@PathVariable long trainRouteId) {
         return trainRouteService.getStationsOfRoute(trainRouteId);
+    }
+
+    @Operation(summary = "Create a stoppage Station of a Train-Route")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PostMapping("/stations")
+    public TrainRouteStationResponse createTrainRouteStation(@RequestBody @Valid TrainRouteStationCreateRequest request) {
+        return trainRouteService.createTrainRouteStation(request);
+    }
+
+    @Operation(summary = "Update a stoppage Station of a Train-Route")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PutMapping("/stations")
+    public TrainRouteStationResponse updateTrainRouteStation(@RequestBody @Valid TrainRouteStationUpdateRequest request) {
+        return trainRouteService.updateTrainRouteStation(request);
     }
 }

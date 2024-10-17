@@ -1,6 +1,8 @@
 package com.example.railwayticket.service.intface;
 
 import com.example.railwayticket.model.dto.request.route.TrainRouteCreateRequest;
+import com.example.railwayticket.model.dto.request.route.TrainRouteStationCreateRequest;
+import com.example.railwayticket.model.dto.request.route.TrainRouteStationUpdateRequest;
 import com.example.railwayticket.model.dto.request.route.TrainRouteUpdateRequest;
 import com.example.railwayticket.model.dto.response.TrainRouteResponse;
 import com.example.railwayticket.model.dto.response.TrainRouteStationResponse;
@@ -15,4 +17,8 @@ public interface TrainRouteService {
     TrainRouteResponse updateTrainRoute(TrainRouteUpdateRequest request);
 
     List<TrainRouteStationResponse> getStationsOfRoute(long trainRouteId);
+
+    TrainRouteStationResponse createTrainRouteStation(TrainRouteStationCreateRequest request);
+
+    TrainRouteStationResponse updateTrainRouteStation(TrainRouteStationUpdateRequest request);
 }
