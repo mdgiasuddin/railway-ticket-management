@@ -27,7 +27,7 @@ public class FareServiceImpl implements FareService {
 
     @Override
     public List<FareResponse> getAllFares() {
-        return fareRepository.getAllRouteFairs()
+        return fareRepository.getAllFairs()
                 .stream()
                 .map(f -> new FareResponse(f, f.getFromStation(), f.getToStation()))
                 .toList();
