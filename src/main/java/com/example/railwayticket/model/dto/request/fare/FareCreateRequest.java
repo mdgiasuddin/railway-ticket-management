@@ -14,6 +14,6 @@ public record FareCreateRequest(
         TicketClass ticketClass,
 
         @NotNull
-        Double fareAmount
+        Double fare
 ) {
 }

@@ -11,13 +11,13 @@ public class FareResponse {
     private final StationResponse fromStation;
     private final StationResponse toStation;
     private final TicketClass ticketClass;
-    private final double fareAmount;
+    private final double fare;
 
     public FareResponse(Fare fare, Station fromStation, Station toStation) {
         this.id = fare.getId();
         this.fromStation = new StationResponse(fromStation);
         this.toStation = new StationResponse(toStation);
         this.ticketClass = fare.getTicketClass();
-        this.fareAmount = fare.getAmount();
+        this.fare = fare.getAmount();
     }
 }

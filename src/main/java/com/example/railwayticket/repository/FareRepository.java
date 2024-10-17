@@ -11,7 +11,7 @@ public interface FareRepository extends JpaRepository<Fare, Long> {
 
     @Query("""
             select f from Fare f inner join fetch f.fromStation fs inner join fetch f.toStation ts
-            order by fs.id, ts.id, f.ticketClass
+            order by fs.id, ts.id, f.amount
             """)
     List<Fare> getAllFairs();
 

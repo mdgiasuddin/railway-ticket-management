@@ -37,7 +37,7 @@ public class FareServiceImpl implements FareService {
     public FareResponse createNewFare(FareCreateRequest request) {
         Fare fare = new Fare();
 
-        return fillFareInformation(fare, request.fromStationId(), request.toStationId(), request.ticketClass(), request.fareAmount());
+        return fillFareInformation(fare, request.fromStationId(), request.toStationId(), request.ticketClass(), request.fare());
     }
 
     @Override
@@ -45,7 +45,7 @@ public class FareServiceImpl implements FareService {
         Fare fare = fareRepository.findById(request.id())
                 .orElseThrow(() -> new ResourceNotFoundException("FARE_NOT_FOUND", String.format("No Fare found with id %d", request.id())));
 
-        return fillFareInformation(fare, request.fromStationId(), request.toStationId(), request.ticketClass(), request.fareAmount());
+        return fillFareInformation(fare, request.fromStationId(), request.toStationId(), request.ticketClass(), request.fare());
     }
 
     private FareResponse fillFareInformation(Fare fare, Long fromStationId, Long toStationId, TicketClass ticketClass, Double fareAmount) {
