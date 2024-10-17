@@ -34,7 +34,7 @@ public class TrainRouteServiceImpl implements TrainRouteService {
 
     @Override
     public List<TrainRouteResponse> getAllTrainRoutes() {
-        return trainRouteRepository.findAllByIdIsNotNull()
+        return trainRouteRepository.findAllByOrderById()
                 .stream()
                 .map(tr -> new TrainRouteResponse(tr, tr.getTrain(), tr.getRoute()))
                 .sorted(

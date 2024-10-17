@@ -51,7 +51,7 @@ public class SchedulerService {
 
         do {
             Pageable pageable = PageRequest.of(page, routeFetchSize);
-            trainRoutePage = trainRouteRepository.findTrainRoutesByIdIsNotNull(pageable);
+            trainRoutePage = trainRouteRepository.findTrainRoutesByOrderById(pageable);
 
             for (TrainRoute trainRoute : trainRoutePage) {
                 if (trainRoute.getTrain().isActive() && !journeyDate.getDayOfWeek().equals(trainRoute.getOffDay())) {

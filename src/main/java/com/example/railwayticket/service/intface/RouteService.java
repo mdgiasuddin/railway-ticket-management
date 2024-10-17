@@ -5,7 +5,11 @@ import com.example.railwayticket.model.dto.request.route.RouteUpdateRequest;
 import com.example.railwayticket.model.dto.response.RouteResponse;
 import com.example.railwayticket.model.entity.Route;
 
+import java.util.List;
+
 public interface RouteService {
+    List<RouteResponse> getAllRoutes();
+
     Route getRouteById(Long id);
 
     Route getRouteByIdWithStations(Long id);
