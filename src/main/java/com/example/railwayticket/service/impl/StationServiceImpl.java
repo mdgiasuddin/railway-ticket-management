@@ -1,6 +1,8 @@
 package com.example.railwayticket.service.impl;
 
 import com.example.railwayticket.exception.ResourceNotFoundException;
+import com.example.railwayticket.model.dto.request.station.StationCreateRequest;
+import com.example.railwayticket.model.dto.request.station.StationUpdateRequest;
 import com.example.railwayticket.model.dto.response.StationResponse;
 import com.example.railwayticket.model.entity.Station;
 import com.example.railwayticket.repository.StationRepository;
@@ -26,6 +28,24 @@ public class StationServiceImpl implements StationService {
     @Override
     public List<StationResponse> getAllStations() {
         return convertToResponse(stationRepository.findAll());
+    }
+
+    @Override
+    public StationResponse createNewStation(StationCreateRequest request) {
+        Station station = new Station();
+        station.setName(request.name());
+        station.setDescription(request.description());
+
+        return new StationResponse(stationRepository.save(station));
+    }
+
+    @Override
+    public StationResponse updateStation(StationUpdateRequest request) {
+        Station station = getStationById(request.id());
+        station.setName(request.name());
+        station.setDescription(request.description());
+
+        return new StationResponse(stationRepository.save(station));
     }
 
     private List<StationResponse> convertToResponse(List<Station> stations) {

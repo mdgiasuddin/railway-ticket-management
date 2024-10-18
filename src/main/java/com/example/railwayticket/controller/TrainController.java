@@ -3,7 +3,9 @@ package com.example.railwayticket.controller;
 import com.example.railwayticket.model.dto.request.train.TrainCreateRequest;
 import com.example.railwayticket.model.dto.request.train.TrainStatusUpdateRequest;
 import com.example.railwayticket.model.dto.request.train.TrainUpdateRequest;
+import com.example.railwayticket.model.dto.response.StationResponse;
 import com.example.railwayticket.model.dto.response.TrainResponse;
+import com.example.railwayticket.model.enumeration.RouteType;
 import com.example.railwayticket.service.intface.TrainService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -11,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -52,5 +55,12 @@ public class TrainController {
     @PatchMapping("/status")
     public TrainResponse updateTrainStatus(@RequestBody @Valid TrainStatusUpdateRequest request) {
         return trainService.updateTrainStatus(request);
+    }
+
+    @Operation(summary = "Get list of Station from where the Train will take passenger")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @GetMapping("/stations/{trainId}/{routeType}")
+    public List<StationResponse> getListOfStoppageStation(@PathVariable long trainId, @PathVariable RouteType routeType) {
+        return trainService.getListOfStoppageStation(trainId, routeType);
     }
 }

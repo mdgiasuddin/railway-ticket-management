@@ -14,7 +14,7 @@ import java.util.Objects;
 @Setter
 public class Station extends BaseEntity {
 
-    @Column(nullable = false, columnDefinition = "varchar(50)")
+    @Column(nullable = false, unique = true, columnDefinition = "varchar(50)")
     private String name;
 
     @Column(nullable = false)
