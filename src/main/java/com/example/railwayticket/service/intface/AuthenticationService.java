@@ -4,10 +4,9 @@ import com.example.railwayticket.model.dto.request.authentication.Authentication
 import com.example.railwayticket.model.dto.request.authentication.UserRegistrationRequest;
 import com.example.railwayticket.model.dto.response.AuthenticationResponse;
 import com.example.railwayticket.model.dto.response.UserResponse;
-import jakarta.validation.Valid;
 
 public interface AuthenticationService {
     AuthenticationResponse login(AuthenticationRequest request);
 
-    UserResponse register(@Valid UserRegistrationRequest request);
+    UserResponse register(UserRegistrationRequest request);
 }

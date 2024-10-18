@@ -42,12 +42,13 @@ public class SchedulerService {
     private final TrainRouteRepository trainRouteRepository;
     private final FareRepository fareRepository;
     private final TrainJourneyRepository trainJourneyRepository;
-    private final LocalDate journeyDate = AppDateTimeUtils.todayInBD().plusDays(1);
 
     @Transactional
-    @Scheduled(cron = "0 22 22 * * ?", zone = BD_TIME_ZONE)
+    @Scheduled(cron = "${train-journey.scheduler}", zone = BD_TIME_ZONE)
     public void scheduleTrainJourney() {
-        log.info("Scheduler started at: {}", LocalDateTime.now());
+        log.info("Scheduler started at: {}", AppDateTimeUtils.nowInBD());
+        LocalDate journeyDate = AppDateTimeUtils.todayInBD().plusDays(1);
+
         int page = 0;
         int routeFetchSize = 100;
         Page<TrainRoute> trainRoutePage;
@@ -58,14 +59,14 @@ public class SchedulerService {
 
             for (TrainRoute trainRoute : trainRoutePage) {
                 if (trainRoute.getTrain().isActive() && !journeyDate.getDayOfWeek().equals(trainRoute.getOffDay())) {
-                    createTrainJourney(trainRoute);
+                    createTrainJourney(trainRoute, journeyDate);
                 }
             }
             page += 1;
         } while (trainRoutePage.hasNext());
     }
 
-    private void createTrainJourney(TrainRoute trainRoute) {
+    private void createTrainJourney(TrainRoute trainRoute, LocalDate journeyDate) {
         Set<TrainRouteStation> trainRouteStations = trainRoute.getTrainRouteStations();
         Map<Long, TrainRouteStation> stationMap = buildStationMap(trainRouteStations);
         List<Long> stationIds = getStationIds(trainRouteStations);

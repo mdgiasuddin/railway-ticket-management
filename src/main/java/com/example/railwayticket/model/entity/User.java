@@ -40,10 +40,13 @@ public class User implements UserDetails {
     @Column(nullable = false, columnDefinition = "varchar(60)")
     private String password;
 
-    @Column(nullable = false, columnDefinition = "varchar(15)")
+    @Column(unique = true, nullable = false, columnDefinition = "varchar(15)")
     private String mobileNumber;
 
-    @Column(nullable = false, columnDefinition = "varchar(20)")
+    @Column(unique = true, nullable = false, columnDefinition = "varchar(50)")
+    private String email;
+
+    @Column(unique = true, nullable = false, columnDefinition = "varchar(20)")
     private String nid;
 
     @Column(nullable = false, columnDefinition = "varchar(20)")
