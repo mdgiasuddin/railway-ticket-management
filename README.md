@@ -2,11 +2,19 @@
 Railway ticket management system back-end. This architecture can be used in Bangladesh railway to maintain railway schedule and sell the Railway tickets.
 
 ## Table of Contents
+
+- [Features](#features)
 - [Technology Stack](#technology-stack)
 - [Project Setup](#project-setup)
-- [Features](#features)
 - [Workflow](#workflow)
 - [Future Improvement](#future-improvement)
+
+## Features
+
+- An `Admin User` will perform all the necessary setup. Based on the setup at a specific time of the day, the scheduler
+  will run and schedule the train of every route. `User` can search for train-journey for a specific date. Based on the
+  ticket
+  availability, `User` can book a Ticket.
 
 ## Technology Stack
 
@@ -32,12 +40,6 @@ Clone the repository: `git clone https://github.com/mdgiasuddin/railway-ticket-m
 
 The application will be available at `http://localhost:{{port}}/swagger-ui/index.html`. <br>
 Swagger Credential => `(username: 'swagger', password: 'swagger')`
-
-## Features
-
-- An `Admin User` will perform all the necessary setup. Based on the setup at a specific time of the day, the scheduler
-  will run and schedule the train of every route. `User` can search for train for a specific date. Based on the ticket
-  availability, `User` can book a Ticket.
 
 ## Workflow
 
