@@ -59,6 +59,7 @@ Swagger Credential => `(username: 'swagger', password: 'swagger')`
 * Run scheduler on a suitable time for creating Train-Journey.
 
 <br>
+
 * Register a new User => `POST('/api/auth/register')`
 
 ### With User Access-token
@@ -69,4 +70,6 @@ Swagger Credential => `(username: 'swagger', password: 'swagger')`
 
 
 ## Future Improvement
-* Integrate accounting module so the company authority can see the report of income, expense and profit.
+
+* Integrate payment-gateway so that user can make payment to purchase the Ticket. Integrate accounting module so the
+  company authority can see the report of income, expense and profit.
