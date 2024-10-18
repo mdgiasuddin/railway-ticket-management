@@ -12,9 +12,9 @@ Railway ticket management system back-end. This architecture can be used in Bang
 
 This repository is built upon following technologies:
 
+* Java 21
 * Spring Boot 3.3.x
 * Postgresql
-* JDK 21
 
 ## Project Setup
 
