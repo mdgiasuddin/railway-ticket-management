@@ -62,7 +62,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public UserResponse changePassword(PasswordChangeRequest request) {
         User user = SecurityUtils.getCurrentUser()
                 .orElseThrow(() -> {
-                    log.error("User must be logged in to book a ticket");
+                    log.error("User must be logged in to change password");
                     return new RuleViolationException("LOGGED_IN_USER_NOT_FOUND", "User must be logged in to change password");
                 });
 
