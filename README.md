@@ -34,19 +34,22 @@ The application will be available at `http://localhost:{{port}}/swagger-ui/index
 Swagger Credential => `(username: 'swagger', password: 'swagger')`
 
 ## Features
-- Needs to update
+
+- An `Admin User` will perform all the necessary setup. Based on the setup at a specific time of the day, the scheduler
+  will run and schedule the train of every route. `User` can search for train for a specific date. Based on the ticket
+  availability, `User` can book a Ticket.
 
 ## Workflow
 
 * Create an `Admin User` at the start of the project by running insert query.
 
-### With Admin User Credential
+### With Admin User Access-token
 
 * Create Railway Stations => `POST('/api/stations')`
 * Create a Route using 2 Stations of the existing stations => `POST('/api/routes')`
 * Create a Train => `POST('/api/trains')`
 * Map Train with a Route (UP and DOWN) => `POST('/api/train-routes')`
-* Map all the Stations with the Train-Route on which the Train will take passengers =>
+* Map all the Stations with the Train-Route from which the Train will take passengers =>
   `POST('/api/train-routes/stations')`
 * Create Coaches of the Train => `POST('/api/coaches')`
 * Create Seats of the Coach => `POST('/api/seats')` <br>
@@ -55,9 +58,10 @@ Swagger Credential => `(username: 'swagger', password: 'swagger')`
   `POST('/api/fares')`
 * Run scheduler on a suitable time for creating Train-Journey.
 
+<br>
 * Register a new User => `POST('/api/auth/register')`
 
-### With User Credential
+### With User Access-token
 
 * Search for Ticket => `GET('/api/bookings/search-ticket')`
 * Book Ticket => `POST('/api/bookings/book-ticket')`
