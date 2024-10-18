@@ -1,6 +1,7 @@
 package com.example.railwayticket.controller;
 
 import com.example.railwayticket.model.dto.request.authentication.AuthenticationRequest;
+import com.example.railwayticket.model.dto.request.authentication.PasswordChangeRequest;
 import com.example.railwayticket.model.dto.request.authentication.UserRegistrationRequest;
 import com.example.railwayticket.model.dto.response.AuthenticationResponse;
 import com.example.railwayticket.model.dto.response.UserResponse;
@@ -20,15 +21,21 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
 
-    @PostMapping("/login")
     @Operation(summary = "Login and get access-token using username & password.")
+    @PostMapping("/login")
     public AuthenticationResponse login(@RequestBody @Valid AuthenticationRequest request) {
         return authenticationService.login(request);
     }
 
-    @PostMapping("/register")
     @Operation(summary = "Register a new User.")
+    @PostMapping("/register")
     public UserResponse register(@RequestBody @Valid UserRegistrationRequest request) {
         return authenticationService.register(request);
+    }
+
+    @Operation(summary = "Change password.")
+    @PostMapping("/change-password")
+    public UserResponse changePassword(@RequestBody @Valid PasswordChangeRequest request) {
+        return authenticationService.changePassword(request);
     }
 }
