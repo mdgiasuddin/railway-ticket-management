@@ -31,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -238,8 +237,11 @@ public class BookingServiceImpl implements BookingService {
         }
         trainJourneyRepository.saveAll(trainJourneys);
 
+        String randomFilename = String.format("%s.pdf", MiscUtils.generateIdKey());
         Ticket ticket = new Ticket();
         ticket.setIdKey(MiscUtils.generateIdKey());
+        ticket.setTrainName(firstTrainJourney.getSeat().getCoach().getTrain().getName());
+        ticket.setTicketClass(firstTrainJourney.getSeat().getCoach().getTicketClass());
         ticket.setSeats(String.join(", ", seats));
         ticket.setJourneyIds(request.ids());
         ticket.setFromStation(firstTrainJourney.getFromStation().getName());
@@ -248,11 +250,11 @@ public class BookingServiceImpl implements BookingService {
         ticket.setFare(fare);
         ticket.setServiceCharge(serviceCharge);
         ticket.setPassengerName(currentUser.getName());
+        ticket.setPassengerMobileNumber(currentUser.getMobileNumber());
         ticket.setPassengerNid(currentUser.getNid());
+        ticket.setFilename(randomFilename);
 
         Resource resource = ticketPrintService.printTicket(ticketRepository.save(ticket));
-        String filename = AppDateTimeUtils.nowInBD()
-                .format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".pdf";
-        return MiscUtils.convertToFile(resource, filename);
+        return MiscUtils.convertToFile(resource, randomFilename);
     }
 }

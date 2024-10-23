@@ -34,9 +34,9 @@ public class BookingController {
     public TicketSearchResponse searchTicket(
             @RequestParam long fromStationId,
             @RequestParam long toStationId,
-            @DateTimeFormat(pattern = DATE_PATTERN) @RequestParam LocalDate date
+            @DateTimeFormat(pattern = DATE_PATTERN) @RequestParam LocalDate journeyDate
     ) {
-        return bookingService.searchTicket(fromStationId, toStationId, date);
+        return bookingService.searchTicket(fromStationId, toStationId, journeyDate);
     }
 
     @Operation(summary = "Book a ticket")
