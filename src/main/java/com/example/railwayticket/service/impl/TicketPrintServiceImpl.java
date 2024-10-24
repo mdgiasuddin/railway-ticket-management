@@ -25,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.format.DateTimeFormatter;
 
+import static com.example.railwayticket.utils.AppDateTimeUtils.DATE_PATTERN_FILE_DIR;
 import static com.example.railwayticket.utils.AppDateTimeUtils.DATE_TIME_PATTERN;
 import static com.itextpdf.text.BaseColor.BLACK;
 import static com.itextpdf.text.BaseColor.WHITE;
@@ -50,7 +51,7 @@ public class TicketPrintServiceImpl implements TicketPrintService {
         BaseColor headerColor = new BaseColor(67, 171, 82);
 
         try {
-            String fileDirectory = String.format("%s/%s", fileBaseDirectory, ticket.getJourneyDate().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+            String fileDirectory = String.format("%s/%s", fileBaseDirectory, ticket.getJourneyDate().format(DateTimeFormatter.ofPattern(DATE_PATTERN_FILE_DIR)));
             Files.createDirectories(Paths.get(fileDirectory));
             OutputStream fileOutputStream = Files.newOutputStream(Paths.get(String.format("%s/%s", fileDirectory, ticket.getFilename())));
             PdfWriter.getInstance(document, outputStream); // Return as response.

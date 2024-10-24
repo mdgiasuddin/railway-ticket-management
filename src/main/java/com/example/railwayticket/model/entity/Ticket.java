@@ -59,6 +59,9 @@ public class Ticket extends BaseEntity {
     @Column(nullable = false, columnDefinition = "varchar(15)")
     private String passengerMobileNumber;
 
+    @Column(nullable = false, columnDefinition = "varchar(50)")
+    private String passengerEmail;
+
     @Column(nullable = false, columnDefinition = "varchar(20)")
     private String passengerNid;
 

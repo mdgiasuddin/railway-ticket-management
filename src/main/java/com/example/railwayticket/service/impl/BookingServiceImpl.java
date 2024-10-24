@@ -2,6 +2,7 @@ package com.example.railwayticket.service.impl;
 
 import com.example.railwayticket.exception.ResourceNotFoundException;
 import com.example.railwayticket.exception.RuleViolationException;
+import com.example.railwayticket.model.dto.message.TicketData;
 import com.example.railwayticket.model.dto.request.booking.TicketBookingRequest;
 import com.example.railwayticket.model.dto.request.booking.TicketConfirmationRequest;
 import com.example.railwayticket.model.dto.response.ticketbooking.TicketClassResponse;
@@ -18,6 +19,7 @@ import com.example.railwayticket.model.entity.User;
 import com.example.railwayticket.repository.TicketRepository;
 import com.example.railwayticket.repository.TrainJourneyRepository;
 import com.example.railwayticket.service.intface.BookingService;
+import com.example.railwayticket.service.intface.KafkaMessagingService;
 import com.example.railwayticket.service.intface.TicketPrintService;
 import com.example.railwayticket.utils.AppDateTimeUtils;
 import com.example.railwayticket.utils.MiscUtils;
@@ -51,6 +53,7 @@ public class BookingServiceImpl implements BookingService {
     private final TrainJourneyRepository trainJourneyRepository;
     private final TicketRepository ticketRepository;
     private final TicketPrintService ticketPrintService;
+    private final KafkaMessagingService kafkaMessagingService;
 
     @Override
     public TicketSearchResponse searchTicket(long fromStationId, long toStationId, LocalDate journeyDate) {
@@ -251,10 +254,14 @@ public class BookingServiceImpl implements BookingService {
         ticket.setServiceCharge(serviceCharge);
         ticket.setPassengerName(currentUser.getName());
         ticket.setPassengerMobileNumber(currentUser.getMobileNumber());
+        ticket.setPassengerEmail(currentUser.getEmail());
         ticket.setPassengerNid(currentUser.getNid());
         ticket.setFilename(randomFilename);
 
         Resource resource = ticketPrintService.printTicket(ticketRepository.save(ticket));
-        return MiscUtils.convertToFile(resource, randomFilename);
+        ResponseEntity<Resource> responseEntity = MiscUtils.convertToFile(resource, randomFilename);
+        kafkaMessagingService.sendTicketEmail(new TicketData(ticket));
+
+        return responseEntity;
     }
 }
