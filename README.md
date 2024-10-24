@@ -42,7 +42,10 @@ Clone the repository: `git clone https://github.com/mdgiasuddin/railway-ticket-m
 ### Setup Kafka
 
 * Run the command `docker-compose up -d` or install Kafka manually. For manual installation change the Kafka properties
-  based on the installation.
+  based on the installation. <br><br><br>
+* Change the properties `ticket.file.base.directory` in `application.properties` by replacing
+  `${TICKET_FILE_BASE_DIRECTORY}` with a suitable folder directory where the Tickets will be stored.
+* Run the Project. <br><br>
 
 The application will be available at `http://localhost:{{port}}/swagger-ui/index.html`. <br>
 Swagger Credential => `(username: 'swagger', password: 'swagger')`
